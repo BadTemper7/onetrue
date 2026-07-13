@@ -1,0 +1,662 @@
+// pages/Booking.jsx
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  FiTruck,
+  FiPackage,
+  FiMapPin,
+  FiCalendar,
+  FiClock,
+  FiUser,
+  FiDollarSign,
+  FiCheckCircle,
+  FiAlertCircle,
+  FiArrowLeft,
+  FiArrowRight,
+  FiCheck,
+  FiBox,
+  FiGrid,
+  FiThermometer,
+  FiAnchor,
+  FiTruck as FiTruckIcon,
+  FiFileText,
+  FiInfo,
+} from "react-icons/fi";
+import Button from "../components/ui/Button";
+import InputText from "../components/ui/InputText";
+import InputDate from "../components/ui/InputDate";
+import InputTime from "../components/ui/InputTime";
+import Select from "../components/ui/Select";
+import { useBookingStore } from "../stores/bookingStore";
+import { getApiError } from "../lib/api";
+
+const Booking = () => {
+  const navigate = useNavigate();
+  const [currentStep, setCurrentStep] = useState(1);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [bookingId, setBookingId] = useState("");
+  const createBooking = useBookingStore((state) => state.createBooking);
+  const loading = useBookingStore((state) => state.submitting);
+
+  // Form Data
+  const [formData, setFormData] = useState({
+    // Container Details
+    containerNumber: "",
+    containerSize: "",
+    containerType: "",
+    loadStatus: "",
+    scheduledDateIn: null,
+    scheduledTimeIn: null,
+    shippingLine: "",
+
+    // Driver and Truck Details
+    truckPlateNumber: "",
+    driverName: "",
+    driverLicenseNumber: "",
+    blNumber: "",
+    vesselVoyage: "",
+    weight: "",
+    cargoDescription: "",
+    remarks: "",
+  });
+
+  const [errors, setErrors] = useState({});
+
+  // Options
+  const containerSizes = [
+    { value: "20", label: "20 ft" },
+    { value: "40", label: "40 ft" },
+    { value: "45", label: "45 ft" },
+  ];
+
+  const containerTypes = [
+    { value: "dry", label: "Dry Container" },
+    { value: "reefer", label: "Reefer (Refrigerated)" },
+    { value: "tank", label: "Tank Container" },
+    { value: "open_top", label: "Open Top" },
+    { value: "flat_rack", label: "Flat Rack" },
+  ];
+
+  const loadStatuses = [
+    { value: "empty", label: "Empty" },
+    { value: "laden", label: "Laden (Loaded)" },
+  ];
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleDateChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const validateStep1 = () => {
+    const newErrors = {};
+    if (!formData.containerNumber.trim()) {
+      newErrors.containerNumber = "Container number is required";
+    }
+    if (!formData.containerSize) {
+      newErrors.containerSize = "Container size is required";
+    }
+    if (!formData.containerType) {
+      newErrors.containerType = "Container type is required";
+    }
+    if (!formData.loadStatus) {
+      newErrors.loadStatus = "Load status is required";
+    }
+    if (!formData.scheduledDateIn) {
+      newErrors.scheduledDateIn = "Scheduled date in is required";
+    }
+    if (!formData.scheduledTimeIn) {
+      newErrors.scheduledTimeIn = "Scheduled time in is required";
+    }
+    if (!formData.shippingLine.trim()) {
+      newErrors.shippingLine = "Shipping line is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const validateStep2 = () => {
+    const newErrors = {};
+    if (!formData.truckPlateNumber.trim()) {
+      newErrors.truckPlateNumber = "Truck plate number is required";
+    }
+    if (!formData.driverName.trim()) {
+      newErrors.driverName = "Driver name is required";
+    }
+    if (!formData.driverLicenseNumber.trim()) {
+      newErrors.driverLicenseNumber = "Driver license number is required";
+    }
+    if (!formData.blNumber.trim()) {
+      newErrors.blNumber = "BL number is required";
+    }
+    if (!formData.vesselVoyage.trim()) {
+      newErrors.vesselVoyage = "Vessel/Voyage is required";
+    }
+    if (!formData.weight) {
+      newErrors.weight = "Weight is required";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleNext = () => {
+    let isValid = false;
+    switch (currentStep) {
+      case 1:
+        isValid = validateStep1();
+        break;
+      case 2:
+        isValid = validateStep2();
+        break;
+      default:
+        isValid = true;
+    }
+
+    if (isValid) {
+      if (currentStep === 2) {
+        handleSubmit();
+      } else {
+        setCurrentStep((prev) => Math.min(prev + 1, 2));
+      }
+    }
+  };
+
+  const handleBack = () => {
+    setCurrentStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  const toArrivalDate = () => {
+    const date = new Date(formData.scheduledDateIn);
+    const time = new Date(formData.scheduledTimeIn);
+
+    if (Number.isNaN(date.getTime())) return null;
+    if (!Number.isNaN(time.getTime())) {
+      date.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    }
+
+    return date.toISOString();
+  };
+
+  const handleSubmit = async () => {
+    setErrors({});
+
+    try {
+      const arrivalDate = toArrivalDate();
+      const { booking, message } = await createBooking({
+        containerNumber: formData.containerNumber,
+        containerSize: Number(formData.containerSize),
+        containerType: formData.containerType,
+        containerLoadStatus: formData.loadStatus,
+        serviceType: "container_yard",
+        shippingLine: formData.shippingLine,
+        truckPlateNumber: formData.truckPlateNumber,
+        driverName: formData.driverName,
+        driverLicenseNumber: formData.driverLicenseNumber,
+        blNumber: formData.blNumber,
+        vesselVoyage: formData.vesselVoyage,
+        cargoDescription: formData.cargoDescription,
+        weight: Number(formData.weight) || 0,
+        expectedArrivalDate: arrivalDate,
+        inDate: arrivalDate,
+        clientRemarks: formData.remarks,
+      });
+
+      setBookingId(booking?.bookingReference || booking?.id || "");
+      setBookingSuccess(true);
+      setCurrentStep(1);
+      setFormData({
+        containerNumber: "",
+        containerSize: "",
+        containerType: "",
+        loadStatus: "",
+        scheduledDateIn: null,
+        scheduledTimeIn: null,
+        shippingLine: "",
+        truckPlateNumber: "",
+        driverName: "",
+        driverLicenseNumber: "",
+        blNumber: "",
+        vesselVoyage: "",
+        weight: "",
+        cargoDescription: "",
+        remarks: "",
+      });
+    } catch (error) {
+      setErrors({ general: getApiError(error) });
+    }
+  };
+
+  const renderStepIndicator = () => {
+    const steps = [
+      { number: 1, label: "Container Details" },
+      { number: 2, label: "Driver & Truck" },
+    ];
+
+    return (
+      <div className="mb-8">
+        <div className="flex items-center justify-between relative">
+          {steps.map((step, index) => (
+            <div
+              key={step.number}
+              className="flex flex-col items-center flex-1"
+            >
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold relative z-10 transition-all duration-300 ${
+                  currentStep === step.number
+                    ? "bg-indigo-600 text-white ring-4 ring-indigo-200"
+                    : currentStep > step.number
+                      ? "bg-blue-500 text-white"
+                      : "bg-gray-200 text-gray-500"
+                }`}
+              >
+                {currentStep > step.number ? (
+                  <FiCheck className="w-5 h-5" />
+                ) : (
+                  step.number
+                )}
+              </div>
+              <span
+                className={`text-xs mt-2 font-medium ${
+                  currentStep === step.number
+                    ? "text-indigo-600"
+                    : currentStep > step.number
+                      ? "text-blue-500"
+                      : "text-gray-400"
+                }`}
+              >
+                {step.label}
+              </span>
+            </div>
+          ))}
+          <div className="absolute top-5 left-0 w-full h-0.5 -translate-y-1/2">
+            <div className="h-full bg-gray-200">
+              <div
+                className="h-full bg-indigo-600 transition-all duration-500"
+                style={{
+                  width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
+                }}
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderStep1 = () => (
+    <div className="space-y-4">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-800">
+          Container Details
+        </h3>
+        <p className="text-sm text-gray-500">Enter the container information</p>
+      </div>
+
+      <InputText
+        label="Container Number"
+        name="containerNumber"
+        value={formData.containerNumber}
+        onChange={handleChange}
+        error={errors.containerNumber}
+        placeholder="e.g., CONT-123456"
+        required
+        icon={<FiBox className="h-5 w-5 text-gray-400" />}
+      />
+
+      <Select
+        label="Container Size"
+        name="containerSize"
+        value={formData.containerSize}
+        onChange={handleChange}
+        error={errors.containerSize}
+        options={containerSizes}
+        placeholder="Select container size"
+        required
+        icon={<FiGrid className="h-5 w-5 text-gray-400" />}
+      />
+
+      <Select
+        label="Container Type"
+        name="containerType"
+        value={formData.containerType}
+        onChange={handleChange}
+        error={errors.containerType}
+        options={containerTypes}
+        placeholder="Select container type"
+        required
+        icon={<FiPackage className="h-5 w-5 text-gray-400" />}
+      />
+
+      <Select
+        label="Load Status"
+        name="loadStatus"
+        value={formData.loadStatus}
+        onChange={handleChange}
+        error={errors.loadStatus}
+        options={loadStatuses}
+        placeholder="Select load status"
+        required
+        icon={<FiPackage className="h-5 w-5 text-gray-400" />}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputDate
+          label="Scheduled Date In"
+          name="scheduledDateIn"
+          value={formData.scheduledDateIn}
+          onChange={handleDateChange}
+          error={errors.scheduledDateIn}
+          placeholder="Select date"
+          required
+          minDate={new Date()}
+        />
+
+        <InputTime
+          label="Scheduled Time In"
+          name="scheduledTimeIn"
+          value={formData.scheduledTimeIn}
+          onChange={handleDateChange}
+          error={errors.scheduledTimeIn}
+          placeholder="Select time"
+          required
+          timeIntervals={15}
+        />
+      </div>
+
+      <InputText
+        label="Shipping Line"
+        name="shippingLine"
+        value={formData.shippingLine}
+        onChange={handleChange}
+        error={errors.shippingLine}
+        placeholder="Enter shipping line (e.g., Maersk, MSC, CMA CGM)"
+        required
+        icon={<FiAnchor className="h-5 w-5 text-gray-400" />}
+      />
+    </div>
+  );
+
+  const renderStep2 = () => (
+    <div className="space-y-4">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-800">
+          Driver and Truck Details
+        </h3>
+        <p className="text-sm text-gray-500">
+          Enter the driver and truck information
+        </p>
+      </div>
+
+      <InputText
+        label="Truck Plate Number"
+        name="truckPlateNumber"
+        value={formData.truckPlateNumber}
+        onChange={handleChange}
+        error={errors.truckPlateNumber}
+        placeholder="e.g., ABC-1234"
+        required
+        icon={<FiTruckIcon className="h-5 w-5 text-gray-400" />}
+      />
+
+      <InputText
+        label="Driver Name"
+        name="driverName"
+        value={formData.driverName}
+        onChange={handleChange}
+        error={errors.driverName}
+        placeholder="Enter driver's full name"
+        required
+        icon={<FiUser className="h-5 w-5 text-gray-400" />}
+      />
+
+      <InputText
+        label="Driver License Number"
+        name="driverLicenseNumber"
+        value={formData.driverLicenseNumber}
+        onChange={handleChange}
+        error={errors.driverLicenseNumber}
+        placeholder="Enter driver's license number"
+        required
+        icon={<FiFileText className="h-5 w-5 text-gray-400" />}
+      />
+
+      <InputText
+        label="BL Number"
+        name="blNumber"
+        value={formData.blNumber}
+        onChange={handleChange}
+        error={errors.blNumber}
+        placeholder="Enter BL number"
+        required
+        icon={<FiFileText className="h-5 w-5 text-gray-400" />}
+      />
+
+      <InputText
+        label="Vessel/Voyage"
+        name="vesselVoyage"
+        value={formData.vesselVoyage}
+        onChange={handleChange}
+        error={errors.vesselVoyage}
+        placeholder="e.g., VESSEL-001 / VOY-2024"
+        required
+        icon={<FiAnchor className="h-5 w-5 text-gray-400" />}
+      />
+
+      <InputText
+        label="Weight (kg)"
+        name="weight"
+        type="number"
+        value={formData.weight}
+        onChange={handleChange}
+        error={errors.weight}
+        placeholder="Enter weight in kg"
+        required
+        icon={<FiDollarSign className="h-5 w-5 text-gray-400" />}
+      />
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Cargo Description
+        </label>
+        <textarea
+          name="cargoDescription"
+          value={formData.cargoDescription}
+          onChange={handleChange}
+          rows="3"
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          placeholder="Describe the cargo being transported..."
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-1">
+          Remarks
+        </label>
+        <textarea
+          name="remarks"
+          value={formData.remarks}
+          onChange={handleChange}
+          rows="2"
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          placeholder="Any additional remarks or special instructions..."
+        />
+      </div>
+    </div>
+  );
+
+  const renderStep = () => {
+    switch (currentStep) {
+      case 1:
+        return renderStep1();
+      case 2:
+        return renderStep2();
+      default:
+        return null;
+    }
+  };
+
+  // Booking Flow Steps
+  const bookingFlowSteps = [
+    {
+      icon: FiCheckCircle,
+      title: "Submit Booking Request",
+      description: "Submit booking with scheduled date in",
+    },
+    {
+      icon: FiClock,
+      title: "Admin Review",
+      description: "Admin reviews and assigns yard area",
+    },
+    {
+      icon: FiCheck,
+      title: "Booking Approved",
+      description: "Track status from Account → Bookings",
+    },
+    {
+      icon: FiPackage,
+      title: "Ready for Release",
+      description: "Submit Date Out to compute final bill",
+    },
+    {
+      icon: FiDollarSign,
+      title: "Payment",
+      description: "Add payment after final bill is shown",
+    },
+  ];
+
+  return (
+    <div className="max-w-6xl mx-auto space-y-6">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
+            Book Container
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            Submit a container booking request
+          </p>
+        </div>
+      </div>
+
+      {/* Booking Flow Guide */}
+      <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6 border border-indigo-100">
+        <h3 className="text-sm font-semibold text-indigo-800 mb-3 flex items-center">
+          <FiInfo className="h-4 w-4 mr-2" />
+          Booking Flow
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          {bookingFlowSteps.map((step, index) => (
+            <div key={index} className="flex items-start space-x-2">
+              <div className="flex-shrink-0 mt-0.5">
+                <step.icon className="h-4 w-4 text-indigo-600" />
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-700">
+                  {step.title}
+                </p>
+                <p className="text-xs text-gray-500">{step.description}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Booking Form */}
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        {errors.general && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+          {errors.general}
+        </div>
+      )}
+
+      {bookingSuccess && (
+          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="flex items-start space-x-3">
+              <FiCheckCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium text-blue-700">
+                  Booking Request Submitted Successfully!
+                </p>
+                <p className="text-xs text-blue-600 mt-1">
+                  Booking ID:{" "}
+                  <span className="font-mono font-semibold">{bookingId}</span>
+                </p>
+                <p className="text-xs text-blue-600">
+                  Your booking request has been submitted. Admin will review and
+                  assign yard area. Track status from Account → Bookings.
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Step Indicator */}
+        {!bookingSuccess && renderStepIndicator()}
+
+        {/* Form Content */}
+        <div className="mt-6">
+          {!bookingSuccess ? (
+            renderStep()
+          ) : (
+            <div className="text-center py-8">
+              <FiCheckCircle className="h-16 w-16 text-blue-500 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                Booking Submitted!
+              </h3>
+              <p className="text-gray-600">
+                Your booking request has been submitted successfully. You will
+                be notified once it's reviewed.
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Navigation Buttons */}
+        {!bookingSuccess && (
+          <div className="mt-8 flex items-center justify-between space-x-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleBack}
+              disabled={currentStep === 1 || loading}
+              icon={<FiArrowLeft className="h-4 w-4" />}
+            >
+              Back
+            </Button>
+
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleNext}
+              loading={loading}
+              disabled={loading}
+              icon={<FiArrowRight className="h-4 w-4" />}
+              iconPosition="right"
+              className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 shadow-lg shadow-indigo-200/50"
+            >
+              {currentStep === 2 ? "Submit Booking" : "Next"}
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export default Booking;
