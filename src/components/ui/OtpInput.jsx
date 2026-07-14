@@ -176,10 +176,10 @@ const OtpInput = ({
     }
 
     if (otp[index]) {
-      return `${baseClasses} border-indigo-400 focus:ring-indigo-500 focus:border-indigo-500 bg-indigo-50`;
+      return `${baseClasses} border-emerald-400 focus:ring-emerald-500 focus:border-emerald-500 bg-emerald-50`;
     }
 
-    return `${baseClasses} border-gray-300 focus:ring-indigo-500 focus:border-indigo-500 hover:border-indigo-300`;
+    return `${baseClasses} border-gray-300 focus:ring-emerald-500 focus:border-emerald-500 hover:border-emerald-300`;
   };
 
   return (

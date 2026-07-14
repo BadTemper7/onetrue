@@ -74,12 +74,12 @@ const About = () => {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Hero Section */}
-      <div className="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl p-8 md:p-12 text-white">
+      <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl p-8 md:p-12 text-white">
         <div className="max-w-3xl">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">
             About Our Client Portal
           </h1>
-          <p className="text-indigo-100 text-base md:text-lg">
+          <p className="text-emerald-100 text-base md:text-lg">
             We provide comprehensive shipping and logistics solutions to clients
             worldwide. Our platform makes it easy to book, track, and manage
             your shipments efficiently.
@@ -104,7 +104,7 @@ const About = () => {
             key={index}
             className="bg-white rounded-xl shadow-sm p-6 text-center border border-gray-100"
           >
-            <p className="text-2xl md:text-3xl font-bold text-indigo-600">
+            <p className="text-2xl md:text-3xl font-bold text-emerald-600">
               {stat.value}
             </p>
             <p className="text-sm text-gray-500 mt-1">{stat.label}</p>
@@ -121,8 +121,8 @@ const About = () => {
               key={index}
               className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow"
             >
-              <div className="bg-indigo-50 p-3 rounded-lg inline-block mb-4">
-                <feature.icon className="h-6 w-6 text-indigo-600" />
+              <div className="bg-emerald-50 p-3 rounded-lg inline-block mb-4">
+                <feature.icon className="h-6 w-6 text-emerald-600" />
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">
                 {feature.title}
@@ -142,8 +142,8 @@ const About = () => {
               key={index}
               className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 text-center"
             >
-              <div className="bg-indigo-50 p-3 rounded-full inline-block mb-4">
-                <value.icon className="h-6 w-6 text-indigo-600" />
+              <div className="bg-emerald-50 p-3 rounded-full inline-block mb-4">
+                <value.icon className="h-6 w-6 text-emerald-600" />
               </div>
               <h3 className="text-base font-semibold text-gray-800 mb-2">
                 {value.title}
@@ -162,7 +162,7 @@ const About = () => {
         <p className="text-gray-600 mb-4">
           Book your shipment now and experience seamless logistics.
         </p>
-        <button className="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg shadow-lg shadow-indigo-200/50 transition-all duration-200">
+        <button className="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg shadow-lg shadow-emerald-200/50 transition-all duration-200">
           Get Started
         </button>
       </div>

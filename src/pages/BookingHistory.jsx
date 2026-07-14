@@ -3,6 +3,7 @@ import {
   FiCalendar,
   FiCheckCircle,
   FiClock,
+  FiCreditCard,
   FiDollarSign,
   FiEye,
   FiFilter,
@@ -16,7 +17,7 @@ import Button from "../components/ui/Button";
 import InputFile from "../components/ui/InputFile";
 import InputText from "../components/ui/InputText";
 import Pagination from "../components/ui/Pagination";
-import { getApiError } from "../lib/api";
+import { api, getApiError } from "../lib/api";
 import { useBookingStore } from "../stores/bookingStore";
 import { usePagination } from "../hooks/usePagination";
 
@@ -24,9 +25,9 @@ const statusConfig = {
   pending_admin_approval: ["Pending approval", "bg-amber-100 text-amber-700", FiClock],
   approved_area_assigned: ["Area assigned", "bg-blue-100 text-blue-700", FiCheckCircle],
   rejected: ["Rejected", "bg-red-100 text-red-700", FiX],
-  gate_in_approved: ["Gate-in approved", "bg-indigo-100 text-indigo-700", FiTruck],
-  stored_in_assigned_area: ["Stored in yard", "bg-violet-100 text-violet-700", FiPackage],
-  gate_out_requested: ["Gate-out requested", "bg-orange-100 text-orange-700", FiClock],
+  gate_in_approved: ["Gate-in approved", "bg-emerald-100 text-emerald-700", FiTruck],
+  stored_in_assigned_area: ["Stored in yard", "bg-blue-100 text-blue-700", FiPackage],
+  gate_out_requested: ["Gate-out requested", "bg-emerald-100 text-emerald-700", FiClock],
   gate_out_approved: ["Gate-out approved", "bg-blue-100 text-blue-700", FiCheckCircle],
   completed_gate_out_done: ["Completed", "bg-slate-100 text-slate-700", FiCheckCircle],
   cancelled: ["Cancelled", "bg-slate-100 text-slate-500", FiX],
@@ -46,6 +47,32 @@ const formatDate = (value) => {
   return Number.isNaN(date.getTime()) ? "—" : date.toLocaleDateString();
 };
 
+const BillingBreakdown = ({ booking, className = "" }) => {
+  const lineItems = booking?.billingLineItems || [];
+  if (lineItems.length === 0) return null;
+
+  return (
+    <div className={`rounded-xl border border-slate-200 bg-slate-50 p-4 ${className}`}>
+      <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Billing breakdown</p>
+      <div className="mt-3 space-y-2">
+        {lineItems.map((item, index) => (
+          <div key={`${item.chargeCode || item.description}-${index}`} className="flex items-start justify-between gap-3 text-sm">
+            <div>
+              <p className="font-semibold text-slate-700">{item.chargeCode === "LIFT_ON_20" ? "Lift In Charge" : item.chargeCode === "LIFT_OFF_20" ? "Lift Out Charge" : item.description || item.chargeCode}</p>
+              <p className="text-xs text-slate-500">{Number(item.quantity || 0).toLocaleString()} x PHP {Number(item.rateAmount || 0).toLocaleString()}</p>
+            </div>
+            <p className="shrink-0 font-bold text-slate-900">PHP {Number(item.amount || 0).toLocaleString()}</p>
+          </div>
+        ))}
+      </div>
+      <div className="mt-3 flex items-center justify-between border-t border-slate-200 pt-3 text-sm font-black text-slate-900">
+        <span>Total</span>
+        <span>PHP {Number(booking.billingTotal || booking.paymentAmount || 0).toLocaleString()}</span>
+      </div>
+    </div>
+  );
+};
+
 const BookingHistory = () => {
   const {
     bookings,
@@ -60,10 +87,12 @@ const BookingHistory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [paymentTypes, setPaymentTypes] = useState([]);
   const [modal, setModal] = useState("");
   const [actionError, setActionError] = useState("");
   const [gateOut, setGateOut] = useState({ outDate: "", remarks: "" });
   const [payment, setPayment] = useState({
+    paymentTypeId: "",
     paymentDate: new Date().toISOString().slice(0, 10),
     paymentRemarks: "",
     paymentProof: null,
@@ -71,6 +100,9 @@ const BookingHistory = () => {
 
   useEffect(() => {
     fetchBookings().catch(() => {});
+    api.get("/client/payment-types")
+      .then(({ data }) => setPaymentTypes(data.paymentTypes || []))
+      .catch(() => setPaymentTypes([]));
   }, [fetchBookings]);
 
   useEffect(() => {
@@ -105,6 +137,7 @@ const BookingHistory = () => {
     setActionError("");
     setGateOut({ outDate: "", remarks: "" });
     setPayment({
+      paymentTypeId: paymentTypes[0]?.id || "",
       paymentDate: new Date().toISOString().slice(0, 10),
       paymentRemarks: "",
       paymentProof: null,
@@ -132,6 +165,10 @@ const BookingHistory = () => {
   };
 
   const submitPaymentProof = async () => {
+    if (!payment.paymentTypeId) {
+      setActionError("Please select a payment type.");
+      return;
+    }
     if (!payment.paymentProof) {
       setActionError("Please upload a payment proof.");
       return;
@@ -167,7 +204,7 @@ const BookingHistory = () => {
       ["unpaid", "payment_rejected"].includes(booking.billingStatus)
     ) {
       return (
-        <button onClick={() => openModal("payment", booking)} className="rounded-lg bg-indigo-600 px-3 py-2 text-xs font-semibold text-white hover:bg-indigo-700">
+        <button onClick={() => openModal("payment", booking)} className="rounded-lg bg-emerald-600 px-3 py-2 text-xs font-semibold text-white hover:bg-emerald-700">
           Upload Payment
         </button>
       );
@@ -196,11 +233,11 @@ const BookingHistory = () => {
         <div className="flex flex-col gap-3 sm:flex-row">
           <div className="relative flex-1">
             <FiSearch className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search booking, container, driver, or shipping line" className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-100" />
+            <input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search booking, container, driver, or shipping line" className="w-full rounded-lg border border-slate-300 py-2.5 pl-9 pr-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100" />
           </div>
           <div className="flex items-center gap-2">
             <FiFilter className="text-slate-400" />
-            <select value={filterStatus} onChange={(event) => setFilterStatus(event.target.value)} className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-indigo-500 focus:outline-none">
+            <select value={filterStatus} onChange={(event) => setFilterStatus(event.target.value)} className="rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:border-emerald-500 focus:outline-none">
               <option value="all">All statuses</option>
               {Object.entries(statusConfig).map(([value, config]) => <option key={value} value={value}>{config[0]}</option>)}
             </select>
@@ -226,7 +263,7 @@ const BookingHistory = () => {
             <tbody className="divide-y divide-slate-100">
               {bookingPagination.paginatedItems.map((booking) => (
                 <tr key={booking.id} className="hover:bg-slate-50">
-                  <td className="px-4 py-3"><p className="font-semibold text-indigo-600">{booking.bookingReference}</p><p className="text-xs text-slate-400">{booking.shippingLine}</p></td>
+                  <td className="px-4 py-3"><p className="font-semibold text-emerald-600">{booking.bookingReference}</p><p className="text-xs text-slate-400">{booking.shippingLine}</p></td>
                   <td className="px-4 py-3"><p className="font-medium text-slate-700">{booking.containerNumber}</p><p className="text-xs capitalize text-slate-500">{booking.containerSize} ft • {String(booking.containerType || "").replaceAll("_", " ")}</p></td>
                   <td className="px-4 py-3"><p className="text-slate-700">{booking.driverName || "—"}</p><p className="text-xs text-slate-500">{booking.truckPlateNumber || "—"}</p></td>
                   <td className="px-4 py-3 text-slate-600">{formatDate(booking.inDate || booking.expectedArrivalDate)}</td>
@@ -235,7 +272,7 @@ const BookingHistory = () => {
                   <td className="px-4 py-3"><p className="font-semibold text-slate-700">PHP {Number(booking.billingTotal || booking.paymentAmount || 0).toLocaleString()}</p><p className="text-xs text-slate-500">{billingLabels[booking.billingStatus] || booking.billingStatus}</p></td>
                   <td className="px-4 py-3">
                     <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => openModal("details", booking)} className="rounded-lg p-2 text-indigo-600 hover:bg-indigo-50" aria-label="View booking"><FiEye /></button>
+                      <button onClick={() => openModal("details", booking)} className="rounded-lg p-2 text-emerald-600 hover:bg-emerald-50" aria-label="View booking"><FiEye /></button>
                       {renderAction(booking)}
                     </div>
                   </td>
@@ -270,6 +307,7 @@ const BookingHistory = () => {
                   ["Assigned slot", selectedBooking.assignedSlotNumber],
                   ["Rejection reason", selectedBooking.rejectionReason],
                 ].map(([label, value]) => <div key={label} className="rounded-lg bg-slate-50 p-3"><p className="text-xs font-semibold uppercase text-slate-400">{label}</p><p className="mt-1 text-sm font-medium text-slate-700">{value || "—"}</p></div>)}
+                <BillingBreakdown booking={selectedBooking} className="sm:col-span-2" />
               </div>
             )}
 
@@ -283,7 +321,30 @@ const BookingHistory = () => {
 
             {modal === "payment" && (
               <div className="mt-5 space-y-4">
-                <div className="rounded-xl bg-indigo-50 p-4"><p className="text-sm text-indigo-700">Final bill</p><p className="mt-1 text-2xl font-bold text-indigo-700">PHP {Number(selectedBooking.billingTotal || selectedBooking.paymentAmount || 0).toLocaleString()}</p></div>
+                <div className="rounded-xl bg-emerald-50 p-4"><p className="text-sm text-emerald-700">Final bill</p><p className="mt-1 text-2xl font-bold text-emerald-700">PHP {Number(selectedBooking.billingTotal || selectedBooking.paymentAmount || 0).toLocaleString()}</p></div>
+                <BillingBreakdown booking={selectedBooking} />
+                <label className="block">
+                  <span className="mb-1.5 block text-sm font-medium text-slate-700">Payment Type <span className="text-red-500">*</span></span>
+                  <div className="relative" data-field-control>
+                    <FiCreditCard className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <select className="input pl-10" value={payment.paymentTypeId} onChange={(event) => setPayment((current) => ({ ...current, paymentTypeId: event.target.value }))} required>
+                      <option value="">Select payment type</option>
+                      {paymentTypes.map((item) => <option key={item.id} value={item.id}>{item.name} • {item.bankName || item.name} • {item.accountNumber}</option>)}
+                    </select>
+                  </div>
+                </label>
+                {payment.paymentTypeId && (() => {
+                  const selected = paymentTypes.find((item) => item.id === payment.paymentTypeId);
+                  return selected ? (
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm">
+                      <p className="font-black text-emerald-900">{selected.name}</p>
+                      <p className="mt-2 text-emerald-800">{selected.bankName || selected.name}</p>
+                      <p className="font-black text-emerald-900">{selected.accountNumber}</p>
+                      <p className="text-emerald-800">{selected.accountName}</p>
+                      {selected.qrUrl && <a href={selected.qrUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-lg bg-white px-3 py-2 text-xs font-black text-emerald-700">View QR Code</a>}
+                    </div>
+                  ) : null;
+                })()}
                 <InputText label="Payment Date" name="paymentDate" type="date" value={payment.paymentDate} onChange={(event) => setPayment((current) => ({ ...current, paymentDate: event.target.value }))} required icon={<FiCalendar />} />
                 <InputText label="Payment Remarks" name="paymentRemarks" value={payment.paymentRemarks} onChange={(event) => setPayment((current) => ({ ...current, paymentRemarks: event.target.value }))} placeholder="Reference or notes" />
                 <InputFile label="Payment Proof" name="paymentProof" accept="image/*,.pdf" required maxSize={10} onChange={(event) => setPayment((current) => ({ ...current, paymentProof: event.target.files?.[0] || null }))} />

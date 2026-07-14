@@ -106,7 +106,7 @@ const Header = ({ toggleSidebar, toggleMobileSidebar, sidebarOpen }) => {
                         key={notification.id}
                         className={`p-3 hover:bg-yard-fog cursor-pointer transition-colors border-l-2 ${
                           !notification.read
-                            ? "border-yard-orange bg-yard-fog/60"
+                            ? "border-yard-green bg-yard-fog/60"
                             : "border-transparent"
                         }`}
                       >

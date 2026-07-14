@@ -97,7 +97,7 @@ const BookingLookupPage = () => {
         </div>
 
         <div className="card p-6">
-          <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-indigo-700">
+          <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-emerald-700">
             <ClipboardCheck size={14} /> Booking Status Lookup
           </div>
           <h1 className="mt-3 text-3xl font-black text-slate-950">Track Booking Details</h1>
@@ -136,8 +136,8 @@ const BookingLookupPage = () => {
               </div>
 
               {booking.qrCodeValue && (
-                <div className="mt-5 rounded-3xl border border-indigo-100 bg-indigo-50 p-5">
-                  <div className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-indigo-700">
+                <div className="mt-5 rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
+                  <div className="flex items-center gap-2 text-sm font-black uppercase tracking-wide text-emerald-700">
                     <QrCode size={18} /> Booking QR Value
                   </div>
                   <div className="mt-2 break-all text-lg font-black text-slate-950">{booking.qrCodeValue}</div>
@@ -147,7 +147,7 @@ const BookingLookupPage = () => {
 
             <div className="grid gap-6 lg:grid-cols-2">
               <div className="card p-5">
-                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><Truck size={18} className="text-indigo-700" /> Container and Truck</div>
+                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><Truck size={18} className="text-emerald-700" /> Container and Truck</div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <Detail label="Container Number" value={booking.containerNumber} />
                   <Detail label="Container Size" value={`${booking.containerSize}ft`} />
@@ -163,7 +163,7 @@ const BookingLookupPage = () => {
               </div>
 
               <div className="card p-5">
-                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><UserRound size={18} className="text-indigo-700" /> Client and Driver</div>
+                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><UserRound size={18} className="text-emerald-700" /> Client and Driver</div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <Detail label="Client" value={booking.clientName} />
                   <Detail label="Client Email" value={booking.clientEmail} />
@@ -175,7 +175,7 @@ const BookingLookupPage = () => {
               </div>
 
               <div className="card p-5">
-                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><MapPinned size={18} className="text-indigo-700" /> Yard Assignment</div>
+                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><MapPinned size={18} className="text-emerald-700" /> Yard Assignment</div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <Detail label="Area" value={booking.assignedAreaName || "Pending"} />
                   <Detail label="Slot" value={booking.assignedSlotNumber || "Pending"} />
@@ -187,7 +187,7 @@ const BookingLookupPage = () => {
               </div>
 
               <div className="card p-5">
-                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><ClipboardCheck size={18} className="text-indigo-700" /> Movement and Billing</div>
+                <div className="flex items-center gap-2 text-lg font-black text-slate-950"><ClipboardCheck size={18} className="text-emerald-700" /> Movement and Billing</div>
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <Detail label="Gate-In" value={formatDate(booking.gateInApprovedAt)} />
                   <Detail label="Stored" value={formatDate(booking.storedAt)} />

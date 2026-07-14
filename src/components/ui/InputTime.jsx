@@ -361,10 +361,10 @@ const InputTime = ({
     [
       "flex h-11 w-full items-center justify-center rounded-xl",
       "text-sm font-semibold transition-all duration-200",
-      "focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500",
+      "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500",
       isSelected
-        ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
-        : "text-slate-600 hover:bg-indigo-50 hover:text-indigo-700",
+        ? "bg-emerald-600 text-white shadow-md shadow-emerald-200"
+        : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-700",
     ].join(" ");
 
   return (
@@ -384,7 +384,7 @@ const InputTime = ({
           </label>
 
           {displayValue && !disabled && (
-            <span className="hidden rounded-full bg-indigo-50 px-2.5 py-1 text-[11px] font-semibold text-indigo-600 sm:inline-flex">
+            <span className="hidden rounded-full bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 sm:inline-flex">
               Time selected
             </span>
           )}
@@ -417,7 +417,7 @@ const InputTime = ({
             sizes[size] || sizes.md,
             error
               ? "border-rose-300 bg-rose-50/60 focus-visible:border-rose-500 focus-visible:ring-rose-100"
-              : "border-slate-200 bg-white shadow-sm hover:border-indigo-300 hover:shadow-md focus-visible:border-indigo-500 focus-visible:ring-indigo-100",
+              : "border-slate-200 bg-white shadow-sm hover:border-emerald-300 hover:shadow-md focus-visible:border-emerald-500 focus-visible:ring-emerald-100",
             disabled
               ? "cursor-not-allowed bg-slate-100 text-slate-400 opacity-70 shadow-none"
               : "cursor-pointer",
@@ -430,7 +430,7 @@ const InputTime = ({
               "transition-all duration-200",
               error
                 ? "bg-rose-100 text-rose-500"
-                : "bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100",
+                : "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100",
             ].join(" ")}
           >
             <FiClock className="h-4.5 w-4.5" />
@@ -473,7 +473,7 @@ const InputTime = ({
               <FiChevronDown
                 className={[
                   "h-5 w-5 text-slate-400 transition-transform duration-200",
-                  isOpen ? "rotate-180 text-indigo-600" : "",
+                  isOpen ? "rotate-180 text-emerald-600" : "",
                 ].join(" ")}
               />
             )}
@@ -491,10 +491,10 @@ const InputTime = ({
               "sm:w-[390px]",
             ].join(" ")}
           >
-            <div className="border-b border-slate-100 bg-gradient-to-r from-indigo-50 via-white to-violet-50 px-4 py-4 sm:px-5">
+            <div className="border-b border-slate-100 bg-gradient-to-r from-emerald-50 via-white to-blue-50 px-4 py-4 sm:px-5">
               <div className="flex items-center justify-between gap-3">
                 <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-indigo-500">
+                  <p className="text-xs font-semibold uppercase tracking-[0.16em] text-emerald-500">
                     Time picker
                   </p>
                   <h3 className="mt-1 text-base font-bold text-slate-800">
@@ -505,7 +505,7 @@ const InputTime = ({
                 <button
                   type="button"
                   onClick={toggleManualInput}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-indigo-100 bg-white px-3 text-xs font-semibold text-indigo-600 shadow-sm transition hover:border-indigo-200 hover:bg-indigo-50"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-100 bg-white px-3 text-xs font-semibold text-emerald-600 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
                 >
                   {isManualInput ? (
                     <>
@@ -529,7 +529,7 @@ const InputTime = ({
                   {String(tempHour).padStart(2, "0")}:
                   {String(tempMinute).padStart(2, "0")}
                   {!use24Hour && (
-                    <span className="ml-2 text-sm font-semibold text-indigo-300">
+                    <span className="ml-2 text-sm font-semibold text-emerald-300">
                       {tempPeriod}
                     </span>
                   )}
@@ -559,7 +559,7 @@ const InputTime = ({
                           "text-2xl font-bold text-slate-800 outline-none transition",
                           manualError
                             ? "border-rose-300 focus:border-rose-500 focus:ring-4 focus:ring-rose-100"
-                            : "border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100",
+                            : "border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100",
                         ].join(" ")}
                       />
                     </div>
@@ -586,7 +586,7 @@ const InputTime = ({
                           "text-2xl font-bold text-slate-800 outline-none transition",
                           manualError
                             ? "border-rose-300 focus:border-rose-500 focus:ring-4 focus:ring-rose-100"
-                            : "border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100",
+                            : "border-slate-200 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100",
                         ].join(" ")}
                       />
                     </div>
@@ -608,7 +608,7 @@ const InputTime = ({
                               className={[
                                 "rounded-xl text-xs font-bold transition",
                                 manualPeriod === period
-                                  ? "bg-white text-indigo-600 shadow-sm"
+                                  ? "bg-white text-emerald-600 shadow-sm"
                                   : "text-slate-500 hover:text-slate-700",
                               ].join(" ")}
                             >
@@ -696,7 +696,7 @@ const InputTime = ({
                             className={[
                               "h-11 rounded-xl text-sm font-bold transition-all",
                               tempPeriod === period
-                                ? "bg-white text-indigo-600 shadow-sm"
+                                ? "bg-white text-emerald-600 shadow-sm"
                                 : "text-slate-500 hover:text-slate-700",
                             ].join(" ")}
                           >
@@ -714,7 +714,7 @@ const InputTime = ({
               <button
                 type="button"
                 onClick={handleNow}
-                className="inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-500 transition hover:bg-white hover:text-indigo-600 hover:shadow-sm"
+                className="inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-semibold text-slate-500 transition hover:bg-white hover:text-emerald-600 hover:shadow-sm"
               >
                 <FiRotateCcw className="h-4 w-4" />
                 Now
@@ -732,7 +732,7 @@ const InputTime = ({
                 <button
                   type="button"
                   onClick={isManualInput ? handleManualConfirm : handleSelect}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-indigo-600 px-5 text-sm font-semibold text-white shadow-md shadow-indigo-200 transition hover:bg-indigo-700 active:scale-[0.98]"
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-md shadow-emerald-200 transition hover:bg-emerald-700 active:scale-[0.98]"
                 >
                   <FiCheck className="h-4 w-4" />
                   Apply

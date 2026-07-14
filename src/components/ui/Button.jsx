@@ -16,13 +16,13 @@ const Button = ({
   ...props
 }) => {
   const variants = {
-    primary: "bg-indigo-600 hover:bg-indigo-700 text-white",
+    primary: "bg-emerald-600 hover:bg-emerald-700 text-white",
     secondary: "bg-gray-200 hover:bg-gray-300 text-gray-800",
     success: "bg-blue-600 hover:bg-blue-700 text-white",
     danger: "bg-red-600 hover:bg-red-700 text-white",
     warning: "bg-yellow-500 hover:bg-yellow-600 text-white",
     outline:
-      "bg-transparent border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50",
+      "bg-transparent border-2 border-emerald-600 text-emerald-600 hover:bg-emerald-50",
     ghost: "bg-transparent hover:bg-gray-100 text-gray-700",
   };
 
@@ -34,7 +34,7 @@ const Button = ({
 
   const baseClasses = `
     font-semibold rounded-lg transition duration-200 
-    focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2
+    focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2
     disabled:opacity-50 disabled:cursor-not-allowed
     ${variants[variant]}
     ${sizes[size]}

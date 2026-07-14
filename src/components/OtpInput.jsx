@@ -31,7 +31,7 @@ const OtpInput = ({ value, onChange, disabled }) => {
         <input
           key={index}
           data-otp-index={index}
-          className="h-12 rounded-2xl border border-slate-300 bg-white text-center text-lg font-black text-slate-950 shadow-sm outline-none transition focus:border-indigo-700 focus:ring-4 focus:ring-indigo-700/10 sm:h-14 sm:text-xl"
+          className="h-12 rounded-2xl border border-slate-300 bg-white text-center text-lg font-black text-slate-950 shadow-sm outline-none transition focus:border-emerald-700 focus:ring-4 focus:ring-emerald-700/10 sm:h-14 sm:text-xl"
           value={char.trim()}
           disabled={disabled}
           inputMode="numeric"

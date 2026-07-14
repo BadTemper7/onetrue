@@ -10,7 +10,7 @@ const Footer = () => {
       <div className="container mx-auto">
         <div className="flex flex-col sm:flex-row items-center justify-between text-sm text-gray-500">
           <div className="flex items-center space-x-2">
-            <span className="font-mono text-xs tracking-wide text-indigo-600 font-semibold">
+            <span className="font-mono text-xs tracking-wide text-emerald-600 font-semibold">
               OTLI
             </span>
             <span>© {currentYear} Client Portal.</span>
@@ -20,21 +20,21 @@ const Footer = () => {
           <div className="flex items-center space-x-6 mt-2 sm:mt-0">
             <a
               href="#"
-              className="flex items-center space-x-1 hover:text-indigo-600 transition-colors duration-200"
+              className="flex items-center space-x-1 hover:text-emerald-600 transition-colors duration-200"
             >
               <FiShield className="h-3.5 w-3.5" />
               <span>Privacy</span>
             </a>
             <a
               href="#"
-              className="flex items-center space-x-1 hover:text-indigo-600 transition-colors duration-200"
+              className="flex items-center space-x-1 hover:text-emerald-600 transition-colors duration-200"
             >
               <FiGlobe className="h-3.5 w-3.5" />
               <span>Terms</span>
             </a>
             <a
               href="#"
-              className="flex items-center space-x-1 hover:text-indigo-600 transition-colors duration-200"
+              className="flex items-center space-x-1 hover:text-emerald-600 transition-colors duration-200"
             >
               <FiMail className="h-3.5 w-3.5" />
               <span>Support</span>

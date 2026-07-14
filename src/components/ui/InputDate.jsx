@@ -123,7 +123,7 @@ const PickerInput = forwardRef(
           ${
             error
               ? "border-red-300 ring-4 ring-red-50 hover:border-red-400 focus:border-red-500"
-              : "border-slate-200 hover:border-indigo-300 hover:shadow-md focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+              : "border-slate-200 hover:border-emerald-300 hover:shadow-md focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
           }
           ${
             disabled
@@ -136,7 +136,7 @@ const PickerInput = forwardRef(
           className={`mr-3 grid h-8 w-8 shrink-0 place-items-center rounded-xl transition-colors ${
             error
               ? "bg-red-50 text-red-500"
-              : "bg-indigo-50 text-indigo-600 group-hover:bg-indigo-100"
+              : "bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100"
           }`}
         >
           <FiCalendar className="h-4 w-4" />
@@ -396,7 +396,7 @@ const InputDate = ({
           onClick={decreaseMonth}
           disabled={prevMonthButtonDisabled}
           aria-label="Previous month"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <FiChevronLeft className="h-4 w-4" />
         </button>
@@ -406,7 +406,7 @@ const InputDate = ({
             <select
               value={date.getMonth()}
               onChange={(event) => changeMonth(Number(event.target.value))}
-              className="h-9 max-w-[140px] appearance-none rounded-xl border border-slate-200 bg-slate-50 py-0 pl-3 pr-8 text-sm font-semibold text-slate-700 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+              className="h-9 max-w-[140px] appearance-none rounded-xl border border-slate-200 bg-slate-50 py-0 pl-3 pr-8 text-sm font-semibold text-slate-700 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
             >
               {MONTHS.map((month, index) => (
                 <option key={month} value={index}>
@@ -421,7 +421,7 @@ const InputDate = ({
             <select
               value={date.getFullYear()}
               onChange={(event) => changeYear(Number(event.target.value))}
-              className="h-9 appearance-none rounded-xl border border-slate-200 bg-slate-50 py-0 pl-3 pr-8 text-sm font-semibold text-slate-700 outline-none transition focus:border-indigo-400 focus:bg-white focus:ring-4 focus:ring-indigo-100"
+              className="h-9 appearance-none rounded-xl border border-slate-200 bg-slate-50 py-0 pl-3 pr-8 text-sm font-semibold text-slate-700 outline-none transition focus:border-emerald-400 focus:bg-white focus:ring-4 focus:ring-emerald-100"
             >
               {availableYears.map((year) => (
                 <option key={year} value={year}>
@@ -438,7 +438,7 @@ const InputDate = ({
           onClick={increaseMonth}
           disabled={nextMonthButtonDisabled}
           aria-label="Next month"
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-600 disabled:cursor-not-allowed disabled:opacity-40"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
         >
           <FiChevronRight className="h-4 w-4" />
         </button>
@@ -530,26 +530,26 @@ const InputDate = ({
         .modern-date-picker-popper .react-datepicker__day:hover {
           border-radius: 12px;
           background: #eef2ff;
-          color: #4f46e5;
+          color: #087A55;
         }
 
         .modern-date-picker-popper .react-datepicker__day--keyboard-selected {
           background: #eef2ff;
-          color: #4f46e5;
+          color: #087A55;
         }
 
         .modern-date-picker-popper .react-datepicker__day--selected,
         .modern-date-picker-popper .react-datepicker__day--in-selecting-range,
         .modern-date-picker-popper .react-datepicker__day--in-range {
-          background: linear-gradient(135deg, #6366f1, #4f46e5);
+          background: linear-gradient(135deg, #0F1D73, #087A55);
           color: #ffffff;
-          box-shadow: 0 8px 18px rgba(79, 70, 229, 0.28);
+          box-shadow: 0 8px 18px rgba(8, 122, 85, 0.28);
         }
 
         .modern-date-picker-popper .react-datepicker__day--today:not(.react-datepicker__day--selected) {
           border: 1px solid #a5b4fc;
           background: #f5f3ff;
-          color: #4f46e5;
+          color: #087A55;
         }
 
         .modern-date-picker-popper .react-datepicker__day--outside-month {
@@ -571,7 +571,7 @@ const InputDate = ({
           border-top: 1px solid #f1f5f9;
           background: #ffffff;
           padding: 12px;
-          color: #4f46e5;
+          color: #087A55;
           font-size: 13px;
           font-weight: 700;
           transition: background 150ms ease;
@@ -603,11 +603,11 @@ const InputDate = ({
 
         .modern-date-picker-popper .react-datepicker__time-list-item:hover {
           background: #eef2ff !important;
-          color: #4f46e5;
+          color: #087A55;
         }
 
         .modern-date-picker-popper .react-datepicker__time-list-item--selected {
-          background: #4f46e5 !important;
+          background: #087A55 !important;
           color: #ffffff !important;
         }
 
@@ -637,7 +637,7 @@ const InputDate = ({
             <button
               type="button"
               onClick={isManualInput ? cancelManualInput : openManualInput}
-              className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-600 transition-colors hover:bg-indigo-100 hover:text-indigo-700"
+              className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-600 transition-colors hover:bg-emerald-100 hover:text-emerald-700"
             >
               {isManualInput ? (
                 <>
@@ -662,7 +662,7 @@ const InputDate = ({
               className={`absolute left-3 top-1/2 z-10 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-xl ${
                 manualError
                   ? "bg-red-50 text-red-500"
-                  : "bg-indigo-50 text-indigo-600"
+                  : "bg-emerald-50 text-emerald-600"
               }`}
             >
               <FiEdit3 className="h-4 w-4" />
@@ -693,7 +693,7 @@ const InputDate = ({
                 ${
                   manualError
                     ? "border-red-300 ring-4 ring-red-50 focus:border-red-500"
-                    : "border-slate-200 hover:border-indigo-300 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100"
+                    : "border-slate-200 hover:border-emerald-300 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100"
                 }
                 ${
                   disabled
@@ -717,7 +717,7 @@ const InputDate = ({
                 type="button"
                 onClick={handleManualConfirm}
                 aria-label="Confirm manual date"
-                className="grid h-8 w-8 place-items-center rounded-lg bg-indigo-600 text-white shadow-sm transition-all hover:bg-indigo-700 hover:shadow-md active:scale-95"
+                className="grid h-8 w-8 place-items-center rounded-lg bg-emerald-600 text-white shadow-sm transition-all hover:bg-emerald-700 hover:shadow-md active:scale-95"
               >
                 <FiCheck className="h-4 w-4" />
               </button>

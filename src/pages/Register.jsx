@@ -368,7 +368,7 @@ const Register = () => {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold relative z-10 transition-all duration-300 ${
                   currentStep === step.number
-                    ? "bg-indigo-600 text-white ring-4 ring-indigo-200"
+                    ? "bg-emerald-600 text-white ring-4 ring-emerald-200"
                     : currentStep > step.number
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-500"
@@ -383,7 +383,7 @@ const Register = () => {
               <span
                 className={`text-xs mt-2 font-medium ${
                   currentStep === step.number
-                    ? "text-indigo-600"
+                    ? "text-emerald-600"
                     : currentStep > step.number
                       ? "text-blue-500"
                       : "text-gray-400"
@@ -396,7 +396,7 @@ const Register = () => {
           <div className="absolute top-5 left-0 w-full h-0.5 -translate-y-1/2">
             <div className="h-full bg-gray-200">
               <div
-                className="h-full bg-indigo-600 transition-all duration-500"
+                className="h-full bg-emerald-600 transition-all duration-500"
                 style={{
                   width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
                 }}
@@ -656,7 +656,7 @@ const Register = () => {
             type="button"
             onClick={handleResendOTP}
             disabled={loading}
-            className="text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="text-sm text-emerald-600 hover:text-emerald-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Resend OTP
           </button>
@@ -752,11 +752,11 @@ const Register = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left Section - Client Branding - 1/2 width */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex-col items-center justify-center p-12 relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-50 via-emerald-50 to-purple-50 flex-col items-center justify-center p-12 relative overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-200/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2"></div>
-          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-indigo-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+          <div className="absolute top-1/2 left-1/2 w-80 h-80 bg-emerald-200/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
         </div>
 
         <div className="relative z-10 text-center max-w-md w-full">
@@ -781,7 +781,7 @@ const Register = () => {
                 key={index}
                 className="flex items-center space-x-4 bg-white/60 backdrop-blur-sm rounded-lg p-3 border border-white/50 hover:shadow-md transition-all duration-200"
               >
-                <div className="text-indigo-500 flex-shrink-0">
+                <div className="text-emerald-500 flex-shrink-0">
                   <feature.icon className="h-6 w-6" />
                 </div>
                 <div className="text-left">
@@ -811,7 +811,7 @@ const Register = () => {
             </div>
             <Link
               to="/login"
-              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
             >
               Sign In
             </Link>
@@ -827,7 +827,7 @@ const Register = () => {
             </div>
             <Link
               to="/login"
-              className="text-sm text-indigo-600 hover:text-indigo-700 font-medium"
+              className="text-sm text-emerald-600 hover:text-emerald-700 font-medium"
             >
               Already have an account? Sign In
             </Link>
@@ -867,7 +867,7 @@ const Register = () => {
               iconPosition="right"
               className={currentStep === 5
                 ? "bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-200/50"
-                : "bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 shadow-lg shadow-indigo-200/50"}
+                : "bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-200/50"}
             >
               {currentStep === 4
                 ? "Upload and Send OTP"
@@ -911,7 +911,7 @@ const FileUpload = ({ label, name, onChange, error, required, icon }) => {
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
           required={required}
         />
-        <div className="flex items-center justify-center w-full p-4 border-2 border-dashed rounded-lg transition-colors bg-gray-50 hover:bg-gray-100 border-gray-300 hover:border-indigo-400">
+        <div className="flex items-center justify-center w-full p-4 border-2 border-dashed rounded-lg transition-colors bg-gray-50 hover:bg-gray-100 border-gray-300 hover:border-emerald-400">
           <div className="flex items-center space-x-3">
             {icon}
             <span className="text-sm text-gray-600">

@@ -22,7 +22,12 @@ export const useBookingStore = create((set, get) => ({
   createBooking: async (payload) => {
     set({ submitting: true, error: "" });
     try {
-      const { data } = await api.post("/client/bookings", payload);
+      const isMultipart = typeof FormData !== "undefined" && payload instanceof FormData;
+      const { data } = await api.post(
+        "/client/bookings",
+        payload,
+        isMultipart ? { headers: { "Content-Type": "multipart/form-data" } } : undefined,
+      );
       set({
         bookings: [data.booking, ...get().bookings],
         submitting: false,
@@ -58,6 +63,7 @@ export const useBookingStore = create((set, get) => ({
     set({ submitting: true, error: "" });
     try {
       const formData = new FormData();
+      if (payload.paymentTypeId) formData.append("paymentTypeId", payload.paymentTypeId);
       if (payload.paymentDate) formData.append("paymentDate", payload.paymentDate);
       if (payload.paymentRemarks) formData.append("paymentRemarks", payload.paymentRemarks);
       if (payload.paymentProof) formData.append("paymentProof", payload.paymentProof);

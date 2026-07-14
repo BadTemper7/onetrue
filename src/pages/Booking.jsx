@@ -27,8 +27,18 @@ import InputText from "../components/ui/InputText";
 import InputDate from "../components/ui/InputDate";
 import InputTime from "../components/ui/InputTime";
 import Select from "../components/ui/Select";
+import ModernFileInput from "../components/ModernFileInput";
 import { useBookingStore } from "../stores/bookingStore";
 import { getApiError } from "../lib/api";
+
+const documentFields = [
+  { name: "deliveryOrder", label: "Delivery Order", required: true },
+  { name: "bookingConfirmation", label: "Booking Confirmation", required: true },
+  { name: "eir", label: "EIR", required: false },
+  { name: "packingList", label: "Packing List", required: false },
+  { name: "customsClearance", label: "Customs Clearance", required: false },
+  { name: "otherDocument", label: "Other Document", required: false },
+];
 
 const Booking = () => {
   const navigate = useNavigate();
@@ -61,6 +71,7 @@ const Booking = () => {
   });
 
   const [errors, setErrors] = useState({});
+  const [files, setFiles] = useState({});
 
   // Options
   const containerSizes = [
@@ -101,6 +112,15 @@ const Booking = () => {
     }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+  };
+
+  const handleFileChange = (event) => {
+    const { name, files: fileList } = event.target;
+    const file = fileList?.[0] || null;
+    setFiles((current) => ({ ...current, [name]: file }));
+    if (errors.documents) {
+      setErrors((current) => ({ ...current, documents: "" }));
     }
   };
 
@@ -155,6 +175,15 @@ const Booking = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const validateStep3 = () => {
+    const newErrors = {};
+    if (!files.deliveryOrder || !files.bookingConfirmation) {
+      newErrors.documents = "Delivery Order and Booking Confirmation are required.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleNext = () => {
     let isValid = false;
     switch (currentStep) {
@@ -164,15 +193,18 @@ const Booking = () => {
       case 2:
         isValid = validateStep2();
         break;
+      case 3:
+        isValid = validateStep3();
+        break;
       default:
         isValid = true;
     }
 
     if (isValid) {
-      if (currentStep === 2) {
+      if (currentStep === 3) {
         handleSubmit();
       } else {
-        setCurrentStep((prev) => Math.min(prev + 1, 2));
+        setCurrentStep((prev) => Math.min(prev + 1, 3));
       }
     }
   };
@@ -198,7 +230,8 @@ const Booking = () => {
 
     try {
       const arrivalDate = toArrivalDate();
-      const { booking, message } = await createBooking({
+      const payload = new FormData();
+      const bookingFields = {
         containerNumber: formData.containerNumber,
         containerSize: Number(formData.containerSize),
         containerType: formData.containerType,
@@ -215,11 +248,21 @@ const Booking = () => {
         expectedArrivalDate: arrivalDate,
         inDate: arrivalDate,
         clientRemarks: formData.remarks,
+      };
+
+      Object.entries(bookingFields).forEach(([key, value]) => {
+        payload.append(key, value ?? "");
       });
+      Object.entries(files).forEach(([key, file]) => {
+        if (file) payload.append(key, file);
+      });
+
+      const { booking } = await createBooking(payload);
 
       setBookingId(booking?.bookingReference || booking?.id || "");
       setBookingSuccess(true);
       setCurrentStep(1);
+      setFiles({});
       setFormData({
         containerNumber: "",
         containerSize: "",
@@ -246,6 +289,7 @@ const Booking = () => {
     const steps = [
       { number: 1, label: "Container Details" },
       { number: 2, label: "Driver & Truck" },
+      { number: 3, label: "Documents" },
     ];
 
     return (
@@ -259,7 +303,7 @@ const Booking = () => {
               <div
                 className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold relative z-10 transition-all duration-300 ${
                   currentStep === step.number
-                    ? "bg-indigo-600 text-white ring-4 ring-indigo-200"
+                    ? "bg-emerald-600 text-white ring-4 ring-emerald-200"
                     : currentStep > step.number
                       ? "bg-blue-500 text-white"
                       : "bg-gray-200 text-gray-500"
@@ -274,7 +318,7 @@ const Booking = () => {
               <span
                 className={`text-xs mt-2 font-medium ${
                   currentStep === step.number
-                    ? "text-indigo-600"
+                    ? "text-emerald-600"
                     : currentStep > step.number
                       ? "text-blue-500"
                       : "text-gray-400"
@@ -287,7 +331,7 @@ const Booking = () => {
           <div className="absolute top-5 left-0 w-full h-0.5 -translate-y-1/2">
             <div className="h-full bg-gray-200">
               <div
-                className="h-full bg-indigo-600 transition-all duration-500"
+                className="h-full bg-emerald-600 transition-all duration-500"
                 style={{
                   width: `${((currentStep - 1) / (steps.length - 1)) * 100}%`,
                 }}
@@ -479,7 +523,7 @@ const Booking = () => {
           value={formData.cargoDescription}
           onChange={handleChange}
           rows="3"
-          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
           placeholder="Describe the cargo being transported..."
         />
       </div>
@@ -493,9 +537,42 @@ const Booking = () => {
           value={formData.remarks}
           onChange={handleChange}
           rows="2"
-          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
           placeholder="Any additional remarks or special instructions..."
         />
+      </div>
+    </div>
+  );
+
+  const renderStep3 = () => (
+    <div className="space-y-4">
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold text-gray-800">Pre-Advice Documents</h3>
+        <p className="text-sm text-gray-500">Upload the documents that admin will verify together with this booking.</p>
+      </div>
+
+      {errors.documents && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-700">
+          {errors.documents}
+        </div>
+      )}
+
+      <div className="grid gap-4 md:grid-cols-2">
+        {documentFields.map((document) => (
+          <ModernFileInput
+            key={document.name}
+            name={document.name}
+            label={document.label}
+            required={document.required}
+            file={files[document.name]}
+            onChange={handleFileChange}
+            disabled={loading}
+          />
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-blue-100 bg-blue-50 p-4 text-sm text-blue-700">
+        After submission, this booking and its documents will appear in the admin Pre-Advice module for verification.
       </div>
     </div>
   );
@@ -506,6 +583,8 @@ const Booking = () => {
         return renderStep1();
       case 2:
         return renderStep2();
+      case 3:
+        return renderStep3();
       default:
         return null;
     }
@@ -515,13 +594,13 @@ const Booking = () => {
   const bookingFlowSteps = [
     {
       icon: FiCheckCircle,
-      title: "Submit Booking Request",
-      description: "Submit booking with scheduled date in",
+      title: "Create Booking",
+      description: "Booking is automatically treated as pre-advice",
     },
     {
       icon: FiClock,
-      title: "Admin Review",
-      description: "Admin reviews and assigns yard area",
+      title: "Pre-Advice Review",
+      description: "Admin verifies the booking and assigns a yard area",
     },
     {
       icon: FiCheck,
@@ -549,14 +628,14 @@ const Booking = () => {
             Book Container
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Submit a container booking request
+            Create a booking for pre-advice verification
           </p>
         </div>
       </div>
 
       {/* Booking Flow Guide */}
-      <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6 border border-indigo-100">
-        <h3 className="text-sm font-semibold text-indigo-800 mb-3 flex items-center">
+      <div className="bg-gradient-to-r from-emerald-50 to-blue-50 rounded-xl p-6 border border-emerald-100">
+        <h3 className="text-sm font-semibold text-emerald-800 mb-3 flex items-center">
           <FiInfo className="h-4 w-4 mr-2" />
           Booking Flow
         </h3>
@@ -564,7 +643,7 @@ const Booking = () => {
           {bookingFlowSteps.map((step, index) => (
             <div key={index} className="flex items-start space-x-2">
               <div className="flex-shrink-0 mt-0.5">
-                <step.icon className="h-4 w-4 text-indigo-600" />
+                <step.icon className="h-4 w-4 text-emerald-600" />
               </div>
               <div>
                 <p className="text-xs font-medium text-gray-700">
@@ -591,15 +670,15 @@ const Booking = () => {
               <FiCheckCircle className="h-5 w-5 text-blue-500 flex-shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-medium text-blue-700">
-                  Booking Request Submitted Successfully!
+                  Booking Submitted for Pre-Advice Review!
                 </p>
                 <p className="text-xs text-blue-600 mt-1">
                   Booking ID:{" "}
                   <span className="font-mono font-semibold">{bookingId}</span>
                 </p>
                 <p className="text-xs text-blue-600">
-                  Your booking request has been submitted. Admin will review and
-                  assign yard area. Track status from Account → Bookings.
+                  Your booking is now visible in the admin Pre-Advice module for
+                  verification and yard assignment. Track it from Account → Bookings.
                 </p>
               </div>
             </div>
@@ -620,8 +699,8 @@ const Booking = () => {
                 Booking Submitted!
               </h3>
               <p className="text-gray-600">
-                Your booking request has been submitted successfully. You will
-                be notified once it's reviewed.
+                Your booking was automatically submitted as pre-advice. You will
+                be notified after the admin verifies it.
               </p>
             </div>
           )}
@@ -648,9 +727,9 @@ const Booking = () => {
               disabled={loading}
               icon={<FiArrowRight className="h-4 w-4" />}
               iconPosition="right"
-              className="bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-600 hover:to-indigo-700 shadow-lg shadow-indigo-200/50"
+              className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-200/50"
             >
-              {currentStep === 2 ? "Submit Booking" : "Next"}
+              {currentStep === 3 ? "Submit Booking" : "Next"}
             </Button>
           </div>
         )}

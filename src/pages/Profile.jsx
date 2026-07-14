@@ -69,12 +69,12 @@ const Profile = () => {
       {error && <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">{error}</div>}
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="bg-gradient-to-br from-indigo-600 to-violet-700 p-6 text-white md:p-8">
+        <div className="bg-gradient-to-br from-emerald-600 to-blue-700 p-6 text-white md:p-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <p className="text-sm text-indigo-100">Registered company</p>
+              <p className="text-sm text-emerald-100">Registered company</p>
               <h2 className="mt-1 text-3xl font-bold">{user?.companyName || "Company"}</h2>
-              <p className="mt-2 text-indigo-100 capitalize">{user?.companyType?.replaceAll("_", " ") || "Client account"}</p>
+              <p className="mt-2 text-emerald-100 capitalize">{user?.companyType?.replaceAll("_", " ") || "Client account"}</p>
             </div>
             <span className={`w-fit rounded-full border px-4 py-2 text-sm font-semibold capitalize ${statusStyles[user?.status] || "border-white/30 bg-white/10 text-white"}`}>
               {user?.status || "pending"}
@@ -85,7 +85,7 @@ const Profile = () => {
         <div className="grid gap-4 p-6 sm:grid-cols-2">
           {details.map(([label, value, Icon]) => (
             <div key={label} className="flex items-start gap-3 rounded-xl bg-slate-50 p-4">
-              <div className="rounded-lg bg-white p-2 text-indigo-600 shadow-sm"><Icon /></div>
+              <div className="rounded-lg bg-white p-2 text-emerald-600 shadow-sm"><Icon /></div>
               <div><p className="text-xs font-semibold uppercase tracking-wide text-slate-400">{label}</p><p className="mt-1 font-medium text-slate-700">{value || "Not provided"}</p></div>
             </div>
           ))}
@@ -100,15 +100,15 @@ const Profile = () => {
 
       {["active", "verified"].includes(user?.status) && (
         <section className="rounded-xl border border-blue-200 bg-blue-50 p-5">
-          <div className="flex gap-3"><FiCheckCircle className="mt-0.5 h-5 w-5 text-blue-600" /><div><h3 className="font-semibold text-blue-800">Account verified</h3><p className="mt-1 text-sm text-blue-700">You can now submit bookings, pre-advice records, payments, and gate-out requests.</p></div></div>
+          <div className="flex gap-3"><FiCheckCircle className="mt-0.5 h-5 w-5 text-blue-600" /><div><h3 className="font-semibold text-blue-800">Account verified</h3><p className="mt-1 text-sm text-blue-700">You can now submit bookings, payments, and gate-out requests. Every new booking is automatically sent to admin as pre-advice for verification.</p></div></div>
         </section>
       )}
 
       <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
-        <h2 className="flex items-center gap-2 font-semibold text-slate-800"><FiFileText className="text-indigo-600" /> Submitted documents</h2>
+        <h2 className="flex items-center gap-2 font-semibold text-slate-800"><FiFileText className="text-emerald-600" /> Submitted documents</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(user?.documents || []).map((document) => (
-            <a key={`${document.type}-${document.url}`} href={document.secureUrl || document.url} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-200 p-4 hover:border-indigo-300 hover:bg-indigo-50/40">
+            <a key={`${document.type}-${document.url}`} href={document.secureUrl || document.url} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-emerald-50/40">
               <p className="font-medium text-slate-700">{document.label}</p>
               <p className="mt-1 truncate text-xs text-slate-500">{document.fileName}</p>
             </a>

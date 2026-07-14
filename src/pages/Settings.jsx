@@ -44,7 +44,7 @@ const Settings = () => {
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
         <div className="flex items-start gap-3 border-b border-slate-100 pb-5">
-          <div className="rounded-xl bg-indigo-50 p-3 text-indigo-600"><FiShield className="h-6 w-6" /></div>
+          <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600"><FiShield className="h-6 w-6" /></div>
           <div><h2 className="text-lg font-semibold text-slate-800">Change password</h2><p className="text-sm text-slate-500">Use a strong password that you do not use on another account.</p></div>
         </div>
 

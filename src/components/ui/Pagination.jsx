@@ -20,7 +20,7 @@ const Pagination = ({
   const canGoForward = page < totalPages;
 
   const buttonClass =
-    "grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-indigo-300 hover:bg-indigo-50 hover:text-indigo-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:bg-white disabled:hover:text-slate-500";
+    "grid h-9 w-9 place-items-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:border-slate-200 disabled:hover:bg-white disabled:hover:text-slate-500";
 
   return (
     <div className="flex flex-col gap-3 border-t border-slate-200 bg-slate-50/70 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -34,7 +34,7 @@ const Pagination = ({
           <select
             value={pageSize}
             onChange={(event) => setPageSize(event.target.value)}
-            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 font-bold text-slate-700 outline-none transition focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100"
+            className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 font-bold text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100"
           >
             {pageSizeOptions.map((option) => (
               <option key={option} value={option}>{option}</option>
@@ -51,7 +51,7 @@ const Pagination = ({
           <FiChevronLeft />
         </button>
         <span className="min-w-[92px] text-center text-xs font-bold text-slate-600">
-          Page <span className="text-indigo-700">{page}</span> of {totalPages}
+          Page <span className="text-emerald-700">{page}</span> of {totalPages}
         </span>
         <button type="button" className={buttonClass} onClick={() => setPage((current) => Math.min(totalPages, current + 1))} disabled={!canGoForward} aria-label="Next page">
           <FiChevronRight />

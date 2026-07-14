@@ -52,7 +52,7 @@ const Home = () => {
     ).length;
 
     return [
-      { label: "Total bookings", value: bookings.length, icon: FiPackage, className: "bg-indigo-500" },
+      { label: "Total bookings", value: bookings.length, icon: FiPackage, className: "bg-emerald-500" },
       { label: "Pending review", value: pending, icon: FiClock, className: "bg-amber-500" },
       { label: "Containers in yard", value: inYard, icon: FiTruck, className: "bg-blue-500" },
       { label: "Completed", value: completed, icon: FiCheckCircle, className: "bg-blue-500" },
@@ -62,11 +62,11 @@ const Home = () => {
   if (!isVerified) {
     return (
       <div className="mx-auto max-w-4xl space-y-6">
-        <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-6 text-white shadow-lg md:p-10">
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-indigo-100">One True Logistics</p>
+        <section className="overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 to-blue-700 p-6 text-white shadow-lg md:p-10">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-emerald-100">One True Logistics</p>
           <h1 className="mt-3 text-3xl font-bold">Welcome, {user?.name || "Client"}</h1>
-          <p className="mt-2 max-w-2xl text-indigo-100">
-            Your registration is saved. Admin verification is required before you can submit bookings and pre-advice records.
+          <p className="mt-2 max-w-2xl text-emerald-100">
+            Your registration is saved. Admin verification is required before you can submit container bookings.
           </p>
         </section>
         <section className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
@@ -102,7 +102,7 @@ const Home = () => {
           type="button"
           onClick={() => fetchBookings().catch(() => {})}
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
         >
           <FiRefreshCw className={loading ? "animate-spin" : ""} /> Refresh
         </button>
@@ -131,7 +131,7 @@ const Home = () => {
               <h2 className="font-semibold text-slate-800">Recent bookings</h2>
               <p className="text-xs text-slate-500">Latest container activity from your account</p>
             </div>
-            <button onClick={() => navigate("/booking-history")} className="text-sm font-semibold text-indigo-600 hover:text-indigo-700">View all</button>
+            <button onClick={() => navigate("/booking-history")} className="text-sm font-semibold text-emerald-600 hover:text-emerald-700">View all</button>
           </div>
           <div className="divide-y divide-slate-100">
             {bookings.slice(0, 6).map((booking) => (
@@ -141,7 +141,7 @@ const Home = () => {
                 onClick={() => navigate("/booking-history")}
                 className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-slate-50"
               >
-                <div className="rounded-lg bg-indigo-50 p-3 text-indigo-600"><FiPackage /></div>
+                <div className="rounded-lg bg-emerald-50 p-3 text-emerald-600"><FiPackage /></div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-semibold text-slate-800">{booking.bookingReference}</p>
                   <p className="truncate text-sm text-slate-500">{booking.containerNumber} • {booking.shippingLine}</p>
@@ -160,13 +160,13 @@ const Home = () => {
         <section className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="font-semibold text-slate-800">Quick actions</h2>
           <div className="mt-4 space-y-3">
-            <button onClick={() => navigate("/booking")} className="flex w-full items-center gap-3 rounded-lg bg-indigo-600 p-4 text-left text-white hover:bg-indigo-700">
+            <button onClick={() => navigate("/booking")} className="flex w-full items-center gap-3 rounded-lg bg-emerald-600 p-4 text-left text-white hover:bg-emerald-700">
               <FiPackage className="h-5 w-5" />
-              <span><strong className="block">Create booking</strong><small className="text-indigo-100">Submit a container request</small></span>
+              <span><strong className="block">Create booking</strong><small className="text-emerald-100">Automatically submitted as pre-advice for admin review</small></span>
             </button>
-            <button onClick={() => navigate("/pre-advice")} className="flex w-full items-center gap-3 rounded-lg border border-slate-200 p-4 text-left text-slate-700 hover:bg-slate-50">
-              <FiTruck className="h-5 w-5 text-indigo-600" />
-              <span><strong className="block">Submit pre-advice</strong><small className="text-slate-500">Upload operation documents</small></span>
+            <button onClick={() => navigate("/booking-history")} className="flex w-full items-center gap-3 rounded-lg border border-slate-200 p-4 text-left text-slate-700 hover:bg-slate-50">
+              <FiClock className="h-5 w-5 text-emerald-600" />
+              <span><strong className="block">View booking history</strong><small className="text-slate-500">Track verification and container status</small></span>
             </button>
           </div>
         </section>

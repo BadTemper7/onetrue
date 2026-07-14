@@ -124,7 +124,7 @@ const ClientPreAdvice = () => {
   return (
     <div className="space-y-6">
       <div className="card p-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-indigo-700">
+        <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black uppercase tracking-wide text-emerald-700">
           <ClipboardList size={14} />
           Client Pre-Advice
         </div>
