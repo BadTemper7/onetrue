@@ -309,9 +309,14 @@ const Login = () => {
             </p>
           </div>
 
-          <p className="text-center text-xs text-gray-400">
-            © 2024 Client Portal. All rights reserved.
-          </p>
+          <div className="text-center text-xs text-gray-400">
+            <p>© {new Date().getFullYear()} One True Logistics Inc. All rights reserved.</p>
+            <div className="mt-2 flex items-center justify-center gap-3">
+              <Link to="/terms-and-conditions" className="hover:text-emerald-600 hover:underline">Terms</Link>
+              <span>•</span>
+              <Link to="/privacy-policy" className="hover:text-emerald-600 hover:underline">Privacy</Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>

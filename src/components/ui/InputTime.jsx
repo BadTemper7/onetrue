@@ -26,6 +26,7 @@ const InputTime = ({
   size = "md",
   clearable = false,
   minuteStep = 1,
+  hourlyOnly = false,
   use24Hour = false,
   ...props
 }) => {
@@ -36,6 +37,7 @@ const InputTime = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isManualInput, setIsManualInput] = useState(false);
   const [manualError, setManualError] = useState("");
+  const [pickerPlacement, setPickerPlacement] = useState("bottom");
 
   const [selectedHour, setSelectedHour] = useState(12);
   const [selectedMinute, setSelectedMinute] = useState(0);
@@ -56,17 +58,21 @@ const InputTime = ({
   };
 
   const normalizedMinuteStep = Math.min(
-    30,
+    60,
     Math.max(1, Number(minuteStep) || 1),
   );
 
+  const isHourlyOnly = hourlyOnly || normalizedMinuteStep >= 60;
+
   const minuteOptions = useMemo(
     () =>
-      Array.from(
-        { length: Math.ceil(60 / normalizedMinuteStep) },
-        (_, index) => index * normalizedMinuteStep,
-      ).filter((minute) => minute < 60),
-    [normalizedMinuteStep],
+      isHourlyOnly
+        ? [0]
+        : Array.from(
+            { length: Math.ceil(60 / normalizedMinuteStep) },
+            (_, index) => index * normalizedMinuteStep,
+          ).filter((minute) => minute < 60),
+    [isHourlyOnly, normalizedMinuteStep],
   );
 
   const hourOptions = useMemo(
@@ -121,7 +127,7 @@ const InputTime = ({
 
     if (use24Hour) {
       const hour = parsedDate.getHours();
-      const minute = parsedDate.getMinutes();
+      const minute = isHourlyOnly ? 0 : parsedDate.getMinutes();
 
       setSelectedHour(hour);
       setSelectedMinute(minute);
@@ -130,13 +136,14 @@ const InputTime = ({
       return;
     }
 
-    const { hour, minute, period } = to12HourParts(parsedDate);
+    const { hour, minute: parsedMinute, period } = to12HourParts(parsedDate);
+    const minute = isHourlyOnly ? 0 : parsedMinute;
 
     setSelectedHour(hour);
     setSelectedMinute(minute);
     setSelectedPeriod(period);
     syncTemporaryValues(hour, minute, period);
-  }, [value, use24Hour]);
+  }, [value, use24Hour, isHourlyOnly]);
 
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -189,7 +196,7 @@ const InputTime = ({
       }
     }
 
-    date.setHours(hour24, minute, 0, 0);
+    date.setHours(hour24, isHourlyOnly ? 0 : minute, 0, 0);
     return date;
   };
 
@@ -205,7 +212,15 @@ const InputTime = ({
   const openPicker = () => {
     if (disabled) return;
 
-    syncTemporaryValues(selectedHour, selectedMinute, selectedPeriod);
+    const rect = wrapperRef.current?.getBoundingClientRect();
+    if (rect) {
+      const estimatedPickerHeight = isHourlyOnly ? 430 : 620;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setPickerPlacement(spaceBelow < estimatedPickerHeight && spaceAbove > spaceBelow ? "top" : "bottom");
+    }
+
+    syncTemporaryValues(selectedHour, isHourlyOnly ? 0 : selectedMinute, selectedPeriod);
     setIsManualInput(false);
     setIsOpen(true);
   };
@@ -245,7 +260,7 @@ const InputTime = ({
 
     if (use24Hour) {
       const hour = now.getHours();
-      const minute = now.getMinutes();
+      const minute = isHourlyOnly ? 0 : now.getMinutes();
 
       setTempHour(hour);
       setTempMinute(minute);
@@ -254,7 +269,8 @@ const InputTime = ({
       return;
     }
 
-    const { hour, minute, period } = to12HourParts(now);
+    const { hour, minute: currentMinute, period } = to12HourParts(now);
+    const minute = isHourlyOnly ? 0 : currentMinute;
 
     setTempHour(hour);
     setTempMinute(minute);
@@ -276,6 +292,11 @@ const InputTime = ({
   };
 
   const handleManualMinuteChange = (event) => {
+    if (isHourlyOnly) {
+      setManualMinute("00");
+      setManualError("");
+      return;
+    }
     const input = event.target.value.replace(/\D/g, "").slice(0, 2);
     setManualMinute(input);
     setManualError("");
@@ -283,7 +304,7 @@ const InputTime = ({
 
   const handleManualConfirm = () => {
     const hour = Number(manualHour);
-    const minute = Number(manualMinute);
+    const minute = isHourlyOnly ? 0 : Number(manualMinute);
 
     const minimumHour = use24Hour ? 0 : 1;
     const maximumHour = use24Hour ? 23 : 12;
@@ -296,7 +317,8 @@ const InputTime = ({
       hour < minimumHour ||
       hour > maximumHour ||
       minute < 0 ||
-      minute > 59
+      minute > 59 ||
+      (isHourlyOnly && minute !== 0)
     ) {
       setManualError(
         use24Hour
@@ -485,7 +507,8 @@ const InputTime = ({
             role="dialog"
             aria-label="Choose time"
             className={[
-              "absolute left-0 z-50 mt-3 w-full min-w-[290px]",
+              "absolute left-0 z-50 w-full min-w-[290px]",
+              pickerPlacement === "top" ? "bottom-full mb-3" : "top-full mt-3",
               "overflow-hidden rounded-3xl border border-slate-200",
               "bg-white shadow-2xl shadow-slate-300/50",
               "sm:w-[390px]",
@@ -502,7 +525,7 @@ const InputTime = ({
                   </h3>
                 </div>
 
-                <button
+                {!isHourlyOnly && <button
                   type="button"
                   onClick={toggleManualInput}
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-emerald-100 bg-white px-3 text-xs font-semibold text-emerald-600 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
@@ -518,7 +541,7 @@ const InputTime = ({
                       Manual
                     </>
                   )}
-                </button>
+                </button>}
               </div>
 
               <div className="mt-4 flex items-center justify-between rounded-2xl bg-slate-900 px-4 py-3 text-white shadow-lg shadow-slate-200">
@@ -630,6 +653,54 @@ const InputTime = ({
                       Press Enter to confirm the selected time.
                     </p>
                   )}
+                </div>
+              ) : isHourlyOnly ? (
+                <div>
+                  <p className="mb-3 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">Select Hour</p>
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                    {hourOptions.map((hour) => (
+                      <button
+                        key={hour}
+                        type="button"
+                        onClick={() => {
+                          setTempHour(hour);
+                          setTempMinute(0);
+                          setManualHour(String(hour).padStart(2, "0"));
+                          setManualMinute("00");
+                        }}
+                        className={optionButtonClass(tempHour === hour)}
+                      >
+                        {String(hour).padStart(2, "0")}:00
+                      </button>
+                    ))}
+                  </div>
+
+                  {!use24Hour && (
+                    <div className="mt-4">
+                      <p className="mb-2 text-center text-xs font-semibold uppercase tracking-wider text-slate-400">Period</p>
+                      <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-100 p-1.5">
+                        {["AM", "PM"].map((period) => (
+                          <button
+                            key={period}
+                            type="button"
+                            onClick={() => {
+                              setTempPeriod(period);
+                              setManualPeriod(period);
+                            }}
+                            className={[
+                              "h-11 rounded-xl text-sm font-bold transition-all",
+                              tempPeriod === period
+                                ? "bg-white text-emerald-600 shadow-sm"
+                                : "text-slate-500 hover:text-slate-700",
+                            ].join(" ")}
+                          >
+                            {period}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  <p className="mt-3 text-center text-xs font-semibold text-slate-400">Appointments are available in one-hour intervals only.</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-3 sm:gap-4">

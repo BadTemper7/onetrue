@@ -153,7 +153,6 @@ const BookingLookupPage = () => {
                   <Detail label="Container Size" value={`${booking.containerSize}ft`} />
                   <Detail label="Container Type" value={booking.containerType?.replace("_", " ")} />
                   <Detail label="Load Status" value={booking.containerLoadStatus} />
-                  <Detail label="Service Type" value={booking.serviceType === "stripping_stuffing_mano" ? "Stripping / Stuffing with Mano" : "Container Yard Operation"} />
                   <Detail label="Shipping Line" value={booking.shippingLine} />
                   <Detail label="In Date" value={formatDate(getBookingInDate(booking))} />
                   <Detail label="Requested Date Out" value={formatDate(getBookingOutDate(booking))} />

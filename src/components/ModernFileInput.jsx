@@ -17,6 +17,7 @@ const ModernFileInput = ({
   file,
   onChange,
   disabled = false,
+  error = "",
 }) => {
   const inputId = `file-${name || label.replace(/\s+/g, "-").toLowerCase()}`
   const fileSize = formatFileSize(file)
@@ -27,9 +28,11 @@ const ModernFileInput = ({
       className={`group block rounded-3xl border border-dashed p-4 transition ${
         disabled
           ? "cursor-not-allowed border-slate-200 bg-slate-100 opacity-70"
-          : file
-            ? "cursor-pointer border-emerald-300 bg-emerald-50/70 shadow-sm shadow-emerald-100/60 hover:border-emerald-400"
-            : "cursor-pointer border-slate-300 bg-white hover:border-emerald-300 hover:bg-emerald-50/40"
+          : error
+            ? "cursor-pointer border-red-300 bg-red-50/70 ring-2 ring-red-100"
+            : file
+              ? "cursor-pointer border-emerald-300 bg-emerald-50/70 shadow-sm shadow-emerald-100/60 hover:border-emerald-400"
+              : "cursor-pointer border-slate-300 bg-white hover:border-emerald-300 hover:bg-emerald-50/40"
       }`}
     >
       <div className="flex items-start gap-4">
@@ -69,6 +72,7 @@ const ModernFileInput = ({
         )}
       </div>
 
+      {error && <p className="mt-3 text-xs font-bold text-red-600">{error}</p>}
       <input id={inputId} className="sr-only" name={name} type="file" accept={accept} required={required} disabled={disabled} onChange={onChange} />
     </label>
   )

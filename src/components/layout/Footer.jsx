@@ -1,5 +1,6 @@
 // components/layout/Footer.jsx
 import React from "react";
+import { Link } from "react-router-dom";
 import { FiHeart, FiGlobe, FiShield, FiMail } from "react-icons/fi";
 
 const Footer = () => {
@@ -18,22 +19,22 @@ const Footer = () => {
           </div>
 
           <div className="flex items-center space-x-6 mt-2 sm:mt-0">
-            <a
-              href="#"
+            <Link
+              to="/privacy-policy"
               className="flex items-center space-x-1 hover:text-emerald-600 transition-colors duration-200"
             >
               <FiShield className="h-3.5 w-3.5" />
               <span>Privacy</span>
-            </a>
-            <a
-              href="#"
+            </Link>
+            <Link
+              to="/terms-and-conditions"
               className="flex items-center space-x-1 hover:text-emerald-600 transition-colors duration-200"
             >
               <FiGlobe className="h-3.5 w-3.5" />
               <span>Terms</span>
-            </a>
+            </Link>
             <a
-              href="#"
+              href="mailto:otli@onetrue.ph"
               className="flex items-center space-x-1 hover:text-emerald-600 transition-colors duration-200"
             >
               <FiMail className="h-3.5 w-3.5" />

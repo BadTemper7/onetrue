@@ -17,7 +17,7 @@ import Button from "../components/ui/Button";
 import InputFile from "../components/ui/InputFile";
 import InputText from "../components/ui/InputText";
 import Pagination from "../components/ui/Pagination";
-import { api, getApiError } from "../lib/api";
+import { api, getApiError, resolveFileUrl } from "../lib/api";
 import { useBookingStore } from "../stores/bookingStore";
 import { usePagination } from "../hooks/usePagination";
 
@@ -329,7 +329,7 @@ const BookingHistory = () => {
                     <FiCreditCard className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <select className="input pl-10" value={payment.paymentTypeId} onChange={(event) => setPayment((current) => ({ ...current, paymentTypeId: event.target.value }))} required>
                       <option value="">Select payment type</option>
-                      {paymentTypes.map((item) => <option key={item.id} value={item.id}>{item.name} • {item.bankName || item.name} • {item.accountNumber}</option>)}
+                      {paymentTypes.map((item) => <option key={item.id} value={item.id}>{item.type === "cash" ? "Cash • Pay at cashier" : `${item.name} • ${item.bankName || item.name} • ${item.accountNumber}`}</option>)}
                     </select>
                   </div>
                 </label>
@@ -338,10 +338,12 @@ const BookingHistory = () => {
                   return selected ? (
                     <div className="rounded-xl border border-emerald-100 bg-emerald-50 p-4 text-sm">
                       <p className="font-black text-emerald-900">{selected.name}</p>
-                      <p className="mt-2 text-emerald-800">{selected.bankName || selected.name}</p>
-                      <p className="font-black text-emerald-900">{selected.accountNumber}</p>
-                      <p className="text-emerald-800">{selected.accountName}</p>
-                      {selected.qrUrl && <a href={selected.qrUrl} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-lg bg-white px-3 py-2 text-xs font-black text-emerald-700">View QR Code</a>}
+                      {selected.type === "cash" ? <p className="mt-2 font-bold text-emerald-800">Pay at the authorized cashier and upload or enter the official receipt reference.</p> : <>
+                        <p className="mt-2 text-emerald-800">{selected.bankName || selected.name}</p>
+                        <p className="font-black text-emerald-900">{selected.accountNumber}</p>
+                        <p className="text-emerald-800">{selected.accountName}</p>
+                      </>}
+                      {selected.qrUrl && <a href={resolveFileUrl(selected.qrUrl)} target="_blank" rel="noreferrer" className="mt-3 inline-flex rounded-lg bg-white px-3 py-2 text-xs font-black text-emerald-700">View QR Code</a>}
                     </div>
                   ) : null;
                 })()}

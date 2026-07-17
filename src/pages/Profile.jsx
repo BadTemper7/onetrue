@@ -9,7 +9,7 @@ import {
   FiRefreshCw,
   FiUser,
 } from "react-icons/fi";
-import { api, getApiError } from "../lib/api";
+import { api, getApiError, resolveFileUrl } from "../lib/api";
 import { useAuthStore } from "../stores/authStore";
 
 const statusStyles = {
@@ -108,7 +108,7 @@ const Profile = () => {
         <h2 className="flex items-center gap-2 font-semibold text-slate-800"><FiFileText className="text-emerald-600" /> Submitted documents</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {(user?.documents || []).map((document) => (
-            <a key={`${document.type}-${document.url}`} href={document.secureUrl || document.url} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-emerald-50/40">
+            <a key={`${document.type}-${document.url}`} href={resolveFileUrl(document.secureUrl || document.url)} target="_blank" rel="noreferrer" className="rounded-lg border border-slate-200 p-4 hover:border-emerald-300 hover:bg-emerald-50/40">
               <p className="font-medium text-slate-700">{document.label}</p>
               <p className="mt-1 truncate text-xs text-slate-500">{document.fileName}</p>
             </a>

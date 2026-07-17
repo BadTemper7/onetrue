@@ -15,6 +15,8 @@ import About from "./pages/About"
 import Profile from "./pages/Profile"
 import Settings from "./pages/Settings"
 import Rates from "./pages/Rates"
+import TermsConditions from "./pages/TermsConditions"
+import PrivacyPolicy from "./pages/PrivacyPolicy"
 
 const ClientShell = () => <Layout><Outlet /></Layout>
 const TitledPage = ({ title, children }) => <><PageHelmet title={title} />{children}</>
@@ -28,6 +30,8 @@ function App() {
         <Route path="/register" element={<TitledPage title="Client Registration"><Register /></TitledPage>} />
         <Route path="/forgot-password" element={<TitledPage title="Forgot Password"><ForgotPassword type="client" /></TitledPage>} />
         <Route path="/booking-status" element={<TitledPage title="Booking Status"><BookingLookup /></TitledPage>} />
+        <Route path="/terms-and-conditions" element={<TitledPage title="Terms and Conditions"><TermsConditions /></TitledPage>} />
+        <Route path="/privacy-policy" element={<TitledPage title="Privacy Policy"><PrivacyPolicy /></TitledPage>} />
 
         <Route element={<ProtectedRoute userType="client" />}>
           <Route element={<ClientShell />}>
@@ -35,12 +39,12 @@ function App() {
             <Route path="about" element={<TitledPage title="About"><About /></TitledPage>} />
             <Route path="profile" element={<TitledPage title="Profile"><Profile /></TitledPage>} />
             <Route path="settings" element={<TitledPage title="Settings"><Settings /></TitledPage>} />
+            <Route path="rates" element={<TitledPage title="Rates and Payment Types"><Rates /></TitledPage>} />
 
             <Route element={<VerifiedClientRoute />}>
               <Route path="booking" element={<TitledPage title="New Booking"><Booking /></TitledPage>} />
               <Route path="booking-history" element={<TitledPage title="Booking History"><BookingHistory /></TitledPage>} />
               <Route path="pre-advice" element={<Navigate to="/booking" replace />} />
-              <Route path="rates" element={<TitledPage title="Rates and Payment Types"><Rates /></TitledPage>} />
             </Route>
           </Route>
         </Route>

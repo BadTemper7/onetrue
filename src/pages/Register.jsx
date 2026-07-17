@@ -27,6 +27,7 @@ import OtpInput from "../components/ui/OtpInput";
 import logo from "../assets/logo.png";
 import { api, getApiError } from "../lib/api";
 import { useAuthStore } from "../stores/authStore";
+import { PRIVACY_POLICY_VERSION, TERMS_VERSION } from "../constants/legal";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -59,6 +60,9 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    termsAccepted: false,
+    privacyAccepted: false,
+    representativeAuthorityConfirmed: false,
 
     // Step 4: OTP
     otp: "",
@@ -118,10 +122,10 @@ const Register = () => {
   ];
 
   const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
+    const { name, value, type, files, checked } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "file" ? files[0] : value,
+      [name]: type === "file" ? files[0] : type === "checkbox" ? checked : value,
     }));
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
@@ -181,6 +185,15 @@ const Register = () => {
     } else if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = "Passwords do not match";
     }
+    if (!formData.termsAccepted) {
+      newErrors.termsAccepted = "You must agree to the Terms and Conditions";
+    }
+    if (!formData.privacyAccepted) {
+      newErrors.privacyAccepted = "You must consent to the Privacy Policy";
+    }
+    if (!formData.representativeAuthorityConfirmed) {
+      newErrors.representativeAuthorityConfirmed = "You must confirm your authority and the accuracy of the information";
+    }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -229,6 +242,11 @@ const Register = () => {
       email: formData.email.trim(),
       password: formData.password,
       confirmPassword: formData.confirmPassword,
+      termsAccepted: String(formData.termsAccepted),
+      privacyAccepted: String(formData.privacyAccepted),
+      representativeAuthorityConfirmed: String(formData.representativeAuthorityConfirmed),
+      termsVersion: TERMS_VERSION,
+      privacyPolicyVersion: PRIVACY_POLICY_VERSION,
     };
 
     Object.entries(fields).forEach(([key, value]) => {
@@ -583,6 +601,52 @@ const Register = () => {
         showPasswordToggle
         onTogglePassword={() => setShowConfirmPassword(!showConfirmPassword)}
       />
+
+      <div className="mt-6 space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+        <div className="flex items-start gap-3">
+          <FiShield className="mt-0.5 h-5 w-5 flex-shrink-0 text-emerald-600" />
+          <div>
+            <p className="text-sm font-semibold text-slate-800">Required legal agreements</p>
+            <p className="mt-1 text-xs leading-5 text-slate-500">
+              Your acceptance is recorded with the policy version, date, IP address, and browser information.
+            </p>
+          </div>
+        </div>
+
+        <LegalAgreementCheckbox
+          name="termsAccepted"
+          checked={formData.termsAccepted}
+          onChange={handleChange}
+          error={errors.termsAccepted}
+        >
+          I have read and agree to the{" "}
+          <Link to="/terms-and-conditions" target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()} className="font-semibold text-emerald-700 hover:underline">
+            Terms and Conditions
+          </Link>.
+        </LegalAgreementCheckbox>
+
+        <LegalAgreementCheckbox
+          name="privacyAccepted"
+          checked={formData.privacyAccepted}
+          onChange={handleChange}
+          error={errors.privacyAccepted}
+        >
+          I have read the{" "}
+          <Link to="/privacy-policy" target="_blank" rel="noopener noreferrer" onClick={(event) => event.stopPropagation()} className="font-semibold text-emerald-700 hover:underline">
+            Privacy Policy
+          </Link>{" "}
+          and consent to the processing and storage of my personal data and uploaded documents for registration and logistics services.
+        </LegalAgreementCheckbox>
+
+        <LegalAgreementCheckbox
+          name="representativeAuthorityConfirmed"
+          checked={formData.representativeAuthorityConfirmed}
+          onChange={handleChange}
+          error={errors.representativeAuthorityConfirmed}
+        >
+          I confirm that I am at least 18 years old, authorized to register this company, and that the information and documents I submit are accurate and lawfully provided.
+        </LegalAgreementCheckbox>
+      </div>
     </div>
   );
 
@@ -877,14 +941,35 @@ const Register = () => {
             </Button>
           </div>
 
-          <p className="mt-4 text-center text-xs text-gray-400">
-            © 2024 Client Portal. All rights reserved.
-          </p>
+          <div className="mt-4 text-center text-xs text-gray-400">
+            <p>© {new Date().getFullYear()} One True Logistics Inc. All rights reserved.</p>
+            <div className="mt-2 flex items-center justify-center gap-3">
+              <Link to="/terms-and-conditions" className="hover:text-emerald-600 hover:underline">Terms</Link>
+              <span>•</span>
+              <Link to="/privacy-policy" className="hover:text-emerald-600 hover:underline">Privacy</Link>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   );
 };
+
+const LegalAgreementCheckbox = ({ name, checked, onChange, error, children }) => (
+  <div>
+    <label className={`flex cursor-pointer items-start gap-3 rounded-lg border bg-white p-3 transition ${error ? "border-red-300" : "border-slate-200 hover:border-emerald-300"}`}>
+      <input
+        type="checkbox"
+        name={name}
+        checked={checked}
+        onChange={onChange}
+        className="mt-0.5 h-4 w-4 flex-shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+      />
+      <span className="text-xs leading-5 text-slate-600">{children}</span>
+    </label>
+    {error && <p className="mt-1 text-xs text-red-500">{error}</p>}
+  </div>
+);
 
 // File Upload Component
 const FileUpload = ({ label, name, onChange, error, required, icon }) => {

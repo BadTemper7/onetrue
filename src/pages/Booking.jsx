@@ -34,7 +34,6 @@ import { getApiError } from "../lib/api";
 const documentFields = [
   { name: "deliveryOrder", label: "Delivery Order", required: true },
   { name: "bookingConfirmation", label: "Booking Confirmation", required: true },
-  { name: "eir", label: "EIR", required: false },
   { name: "packingList", label: "Packing List", required: false },
   { name: "customsClearance", label: "Customs Clearance", required: false },
   { name: "otherDocument", label: "Other Document", required: false },
@@ -74,10 +73,10 @@ const Booking = () => {
   const [files, setFiles] = useState({});
 
   // Options
+
   const containerSizes = [
     { value: "20", label: "20 ft" },
     { value: "40", label: "40 ft" },
-    { value: "45", label: "45 ft" },
   ];
 
   const containerTypes = [
@@ -92,6 +91,49 @@ const Booking = () => {
     { value: "empty", label: "Empty" },
     { value: "laden", label: "Laden (Loaded)" },
   ];
+
+  const validateField = (name, value = formData[name]) => {
+    const textValue = typeof value === "string" ? value.trim() : value;
+
+    const requiredMessages = {
+      containerNumber: "Container number is required",
+      containerSize: "Container size is required",
+      containerType: "Container type is required",
+      loadStatus: "Load status is required",
+      scheduledDateIn: "Scheduled date in is required",
+      scheduledTimeIn: "Scheduled time in is required",
+      shippingLine: "Shipping line is required",
+      truckPlateNumber: "Truck plate number is required",
+      driverName: "Driver name is required",
+      driverLicenseNumber: "Driver license number is required",
+    };
+
+    if (requiredMessages[name] && !textValue) return requiredMessages[name];
+    if (name === "weight" && textValue !== "" && Number(value) <= 0) return "Weight must be greater than zero";
+    return "";
+  };
+
+  const validateFields = (fieldNames) => {
+    const nextErrors = {};
+    fieldNames.forEach((fieldName) => {
+      const message = validateField(fieldName);
+      if (message) nextErrors[fieldName] = message;
+    });
+
+    setErrors((current) => {
+      const next = { ...current };
+      fieldNames.forEach((fieldName) => delete next[fieldName]);
+      return { ...next, ...nextErrors };
+    });
+
+    return Object.keys(nextErrors).length === 0;
+  };
+
+  const handleBlur = (event) => {
+    const { name, value } = event.target;
+    const message = validateField(name, value);
+    setErrors((current) => ({ ...current, [name]: message }));
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -119,68 +161,41 @@ const Booking = () => {
     const { name, files: fileList } = event.target;
     const file = fileList?.[0] || null;
     setFiles((current) => ({ ...current, [name]: file }));
-    if (errors.documents) {
-      setErrors((current) => ({ ...current, documents: "" }));
-    }
+    setErrors((current) => ({
+      ...current,
+      [name]: "",
+      documents: "",
+    }));
   };
 
-  const validateStep1 = () => {
-    const newErrors = {};
-    if (!formData.containerNumber.trim()) {
-      newErrors.containerNumber = "Container number is required";
-    }
-    if (!formData.containerSize) {
-      newErrors.containerSize = "Container size is required";
-    }
-    if (!formData.containerType) {
-      newErrors.containerType = "Container type is required";
-    }
-    if (!formData.loadStatus) {
-      newErrors.loadStatus = "Load status is required";
-    }
-    if (!formData.scheduledDateIn) {
-      newErrors.scheduledDateIn = "Scheduled date in is required";
-    }
-    if (!formData.scheduledTimeIn) {
-      newErrors.scheduledTimeIn = "Scheduled time in is required";
-    }
-    if (!formData.shippingLine.trim()) {
-      newErrors.shippingLine = "Shipping line is required";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const validateStep1 = () =>
+    validateFields([
+      "containerNumber",
+      "containerSize",
+      "containerType",
+      "loadStatus",
+      "scheduledDateIn",
+      "scheduledTimeIn",
+      "shippingLine",
+    ]);
 
-  const validateStep2 = () => {
-    const newErrors = {};
-    if (!formData.truckPlateNumber.trim()) {
-      newErrors.truckPlateNumber = "Truck plate number is required";
-    }
-    if (!formData.driverName.trim()) {
-      newErrors.driverName = "Driver name is required";
-    }
-    if (!formData.driverLicenseNumber.trim()) {
-      newErrors.driverLicenseNumber = "Driver license number is required";
-    }
-    if (!formData.blNumber.trim()) {
-      newErrors.blNumber = "BL number is required";
-    }
-    if (!formData.vesselVoyage.trim()) {
-      newErrors.vesselVoyage = "Vessel/Voyage is required";
-    }
-    if (!formData.weight) {
-      newErrors.weight = "Weight is required";
-    }
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+  const validateStep2 = () =>
+    validateFields([
+      "truckPlateNumber",
+      "driverName",
+      "driverLicenseNumber",
+    ]);
 
   const validateStep3 = () => {
     const newErrors = {};
-    if (!files.deliveryOrder || !files.bookingConfirmation) {
-      newErrors.documents = "Delivery Order and Booking Confirmation are required.";
-    }
-    setErrors(newErrors);
+    if (!files.deliveryOrder) newErrors.deliveryOrder = "Delivery Order is required.";
+    if (!files.bookingConfirmation) newErrors.bookingConfirmation = "Booking Confirmation is required.";
+
+    setErrors((current) => ({
+      ...current,
+      documents: Object.keys(newErrors).length ? "Please upload the required documents below." : "",
+      ...newErrors,
+    }));
     return Object.keys(newErrors).length === 0;
   };
 
@@ -236,7 +251,6 @@ const Booking = () => {
         containerSize: Number(formData.containerSize),
         containerType: formData.containerType,
         containerLoadStatus: formData.loadStatus,
-        serviceType: "container_yard",
         shippingLine: formData.shippingLine,
         truckPlateNumber: formData.truckPlateNumber,
         driverName: formData.driverName,
@@ -265,7 +279,7 @@ const Booking = () => {
       setFiles({});
       setFormData({
         containerNumber: "",
-        containerSize: "",
+            containerSize: "",
         containerType: "",
         loadStatus: "",
         scheduledDateIn: null,
@@ -281,7 +295,26 @@ const Booking = () => {
         remarks: "",
       });
     } catch (error) {
-      setErrors({ general: getApiError(error) });
+      const message = getApiError(error);
+      const normalizedMessage = message.toLowerCase();
+      const fieldMap = [
+        ["container", "containerNumber", 1],
+        ["in date", "scheduledDateIn", 1],
+        ["arrival", "scheduledDateIn", 1],
+        ["truck", "truckPlateNumber", 2],
+        ["driver", "driverName", 2],
+        ["delivery order", "deliveryOrder", 3],
+        ["booking confirmation", "bookingConfirmation", 3],
+      ];
+      const matchedField = fieldMap.find(([keyword]) => normalizedMessage.includes(keyword));
+
+      if (matchedField) {
+        const [, fieldName, step] = matchedField;
+        setCurrentStep(step);
+        setErrors((current) => ({ ...current, [fieldName]: message, general: "" }));
+      } else {
+        setErrors((current) => ({ ...current, general: message }));
+      }
     }
   };
 
@@ -357,17 +390,20 @@ const Booking = () => {
         name="containerNumber"
         value={formData.containerNumber}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.containerNumber}
         placeholder="e.g., CONT-123456"
         required
         icon={<FiBox className="h-5 w-5 text-gray-400" />}
       />
 
+
       <Select
         label="Container Size"
         name="containerSize"
         value={formData.containerSize}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.containerSize}
         options={containerSizes}
         placeholder="Select container size"
@@ -380,6 +416,7 @@ const Booking = () => {
         name="containerType"
         value={formData.containerType}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.containerType}
         options={containerTypes}
         placeholder="Select container type"
@@ -392,6 +429,7 @@ const Booking = () => {
         name="loadStatus"
         value={formData.loadStatus}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.loadStatus}
         options={loadStatuses}
         placeholder="Select load status"
@@ -405,6 +443,7 @@ const Booking = () => {
           name="scheduledDateIn"
           value={formData.scheduledDateIn}
           onChange={handleDateChange}
+          onBlur={() => handleBlur({ target: { name: "scheduledDateIn", value: formData.scheduledDateIn } })}
           error={errors.scheduledDateIn}
           placeholder="Select date"
           required
@@ -416,10 +455,12 @@ const Booking = () => {
           name="scheduledTimeIn"
           value={formData.scheduledTimeIn}
           onChange={handleDateChange}
+          onBlur={() => handleBlur({ target: { name: "scheduledTimeIn", value: formData.scheduledTimeIn } })}
           error={errors.scheduledTimeIn}
           placeholder="Select time"
           required
-          timeIntervals={15}
+          minuteStep={60}
+          hourlyOnly
         />
       </div>
 
@@ -428,6 +469,7 @@ const Booking = () => {
         name="shippingLine"
         value={formData.shippingLine}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.shippingLine}
         placeholder="Enter shipping line (e.g., Maersk, MSC, CMA CGM)"
         required
@@ -452,6 +494,7 @@ const Booking = () => {
         name="truckPlateNumber"
         value={formData.truckPlateNumber}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.truckPlateNumber}
         placeholder="e.g., ABC-1234"
         required
@@ -463,6 +506,7 @@ const Booking = () => {
         name="driverName"
         value={formData.driverName}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.driverName}
         placeholder="Enter driver's full name"
         required
@@ -474,6 +518,7 @@ const Booking = () => {
         name="driverLicenseNumber"
         value={formData.driverLicenseNumber}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.driverLicenseNumber}
         placeholder="Enter driver's license number"
         required
@@ -485,9 +530,9 @@ const Booking = () => {
         name="blNumber"
         value={formData.blNumber}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.blNumber}
-        placeholder="Enter BL number"
-        required
+        placeholder="Optional BL number"
         icon={<FiFileText className="h-5 w-5 text-gray-400" />}
       />
 
@@ -496,9 +541,9 @@ const Booking = () => {
         name="vesselVoyage"
         value={formData.vesselVoyage}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.vesselVoyage}
-        placeholder="e.g., VESSEL-001 / VOY-2024"
-        required
+        placeholder="Optional vessel / voyage"
         icon={<FiAnchor className="h-5 w-5 text-gray-400" />}
       />
 
@@ -508,9 +553,9 @@ const Booking = () => {
         type="number"
         value={formData.weight}
         onChange={handleChange}
+        onBlur={handleBlur}
         error={errors.weight}
-        placeholder="Enter weight in kg"
-        required
+        placeholder="Optional weight in kg"
         icon={<FiDollarSign className="h-5 w-5 text-gray-400" />}
       />
 
@@ -566,6 +611,7 @@ const Booking = () => {
             required={document.required}
             file={files[document.name]}
             onChange={handleFileChange}
+            error={errors[document.name]}
             disabled={loading}
           />
         ))}

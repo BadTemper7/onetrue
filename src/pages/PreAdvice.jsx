@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ClipboardList, FileText, RefreshCw, Send } from "lucide-react"
 import Alert from "../components/Alert"
 import ModernFileInput from "../components/ModernFileInput"
@@ -22,7 +22,6 @@ const initialForm = {
 const documentFields = [
   { name: "deliveryOrder", label: "Delivery Order", required: true },
   { name: "bookingConfirmation", label: "Booking Confirmation", required: true },
-  { name: "eir", label: "EIR", required: false },
   { name: "packingList", label: "Packing List", required: false },
   { name: "customsClearance", label: "Customs Clearance", required: false },
   { name: "otherDocument", label: "Other Document", required: false },
@@ -50,7 +49,6 @@ const ClientPreAdvice = () => {
   const [submitting, setSubmitting] = useState(false)
   const [alert, setAlert] = useState({ type: "", message: "" })
 
-  const containerNumberPreview = useMemo(() => form.containerNumber.toUpperCase().replace(/[^A-Z0-9]/g, ""), [form.containerNumber])
   const preAdviceRequestRef = useRef(null)
 
   const loadPreAdvices = useCallback(async ({ force = false } = {}) => {
@@ -141,15 +139,13 @@ const ClientPreAdvice = () => {
           <h2 className="text-lg font-black text-slate-950">Container Details</h2>
           <div className="mt-5 grid gap-4 md:grid-cols-2">
             <Field label="Container Number">
-              <input className="input uppercase" name="containerNumber" value={form.containerNumber} onChange={handleChange} placeholder="ABCD1234567" pattern="[A-Za-z]{4}[0-9]{7}" title="Container number must use 4 letters followed by 7 numbers, example: ABCD1234567." required />
-              <div className="mt-1 text-xs font-bold text-slate-400">Format preview: {containerNumberPreview || "ABCD1234567"}</div>
+              <input className="input uppercase" name="containerNumber" value={form.containerNumber} onChange={handleChange} placeholder="Enter container number" required />
             </Field>
 
             <Field label="Container Size">
               <select className="input" name="containerSize" value={form.containerSize} onChange={handleChange} required>
                 <option value="20">20 FT</option>
                 <option value="40">40 FT</option>
-                <option value="45">45 FT</option>
               </select>
             </Field>
 
